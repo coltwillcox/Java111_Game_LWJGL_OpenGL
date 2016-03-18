@@ -53,7 +53,7 @@ public class MainGameLoop {
         }
 
         //Clear memory and close program.
-        shader.cleanUo();
+        shader.cleanUp();
         loader.cleanUp();
         DisplayManager.closeDisplay();
     }

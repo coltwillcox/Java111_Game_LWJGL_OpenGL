@@ -3,6 +3,7 @@
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/lib/jars/lwjgl.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/jars/slick.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jars/lwjgl_util.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
