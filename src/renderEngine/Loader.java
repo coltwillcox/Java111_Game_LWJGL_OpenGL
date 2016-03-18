@@ -26,10 +26,11 @@ public class Loader {
     private List<Integer> vbos = new ArrayList<>(); //List of VBOs (Vertex Buffer Object).
     private List<Integer> textures = new ArrayList<>(); //List of textures. Used later for cleaning them all.
 
-    public RawModel loadToVAO(float[] positions, int[] indices) {
+    public RawModel loadToVAO(float[] positions, float[] textureCoords, int[] indices) {
         int vaoID = createVAO();
         bindIndicesBuffer(indices);
-        storeDataInAttributeList(0, positions); //Store data in attributeList 0.
+        storeDataInAttributeList(0, 3, positions); //Store data (positions) in attributeList 0, with 3D coords.
+        storeDataInAttributeList(1, 2, textureCoords); //2D coords.
         unbindVAO(); //Must unbind VAO when finished using it.
         return new RawModel(vaoID, indices.length);
     }
@@ -53,13 +54,13 @@ public class Loader {
         return vaoID;
     }
 
-    private void storeDataInAttributeList(int attributeNumber, float[] data) {
+    private void storeDataInAttributeList(int attributeNumber, int coordinateSize, float[] data) {
         int vboID = GL15.glGenBuffers(); //Create empty VBO and return its ID.
         vbos.add(vboID);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID); //Bind buffer.
         FloatBuffer buffer = storeDataInFloatBuffer(data);
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW); //Store buffer into the VBO.
-        GL20.glVertexAttribPointer(attributeNumber, 3, GL11.GL_FLOAT, false, 0, 0); //Put VBO in VAO.
+        GL20.glVertexAttribPointer(attributeNumber, coordinateSize, GL11.GL_FLOAT, false, 0, 0); //Put VBO in VAO.
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0); //Unbind current VBO.
     }
 
