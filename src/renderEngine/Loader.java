@@ -26,11 +26,12 @@ public class Loader {
     private List<Integer> vbos = new ArrayList<>(); //List of VBOs (Vertex Buffer Object).
     private List<Integer> textures = new ArrayList<>(); //List of textures. Used later for cleaning them all.
 
-    public RawModel loadToVAO(float[] positions, float[] textureCoords, int[] indices) {
+    public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, int[] indices) {
         int vaoID = createVAO();
         bindIndicesBuffer(indices);
-        storeDataInAttributeList(0, 3, positions); //Store data (positions) in attributeList 0, with 3D coords.
-        storeDataInAttributeList(1, 2, textureCoords); //2D coords.
+        storeDataInAttributeList(0, 3, positions); //Store data (positions) in VAO's attributeList 0, with 3D coords.
+        storeDataInAttributeList(1, 2, textureCoords); //2D (texture) coords.
+        storeDataInAttributeList(2, 3, normals); //Normal vectors.
         unbindVAO(); //Must unbind VAO when finished using it.
         return new RawModel(vaoID, indices.length);
     }
