@@ -67,4 +67,5 @@ public class StaticShader extends ShaderProgram {
         super.loadFloat(locationShineDamper, damper);
         super.loadFloat(locationReflectivity, reflectivity);
     }
+
 }
