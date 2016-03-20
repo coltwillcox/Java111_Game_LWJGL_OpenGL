@@ -25,9 +25,9 @@ public class MasterRenderer {
     private static final float FOV = 75;
     private static final float NEAR_PLANE = 0.1f;
     private static final float FAR_PLANE = 1000;
-    private static final float RED = 0.5f;
-    private static final float GREEN = 0.5f;
-    private static final float BLUE = 0.5f;
+    private static final float RED = (float) 15/255; //Easy to use with color pickers.
+    private static final float GREEN = (float) 3/255;
+    private static final float BLUE = (float) 3/255;
     private Matrix4f projectionMatrix;
     private StaticShader shader = new StaticShader();
     private EntityRenderer renderer;

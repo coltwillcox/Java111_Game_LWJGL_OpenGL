@@ -14,6 +14,9 @@ import models.RawModel;
 import renderEngine.MasterRenderer;
 import terrains.Terrain;
 import textures.ModelTexture;
+import textures.TerrainTexture;
+import textures.TerrainTexturePack;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -27,17 +30,25 @@ public class MainGameLoop {
     public static void main(String[] args) {
         DisplayManager.createDisplay();
         Loader loader = new Loader();
+
+        TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("textureTerrainGrass"));
+        TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("textureTerrainMud"));
+        TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("textureTerrainGrassFlowers"));
+        TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("textureTerrainPath"));
+        TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
+        TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("mapBlend"));
+
         List<Entity> entities = new ArrayList<>();
 
         //Dragon.
-        ModelData dataDragon = OBJFileLoader.loadOBJ("modelDragon");
-        RawModel modelDragon = loader.loadToVAO(dataDragon.getVertices(), dataDragon.getTextureCoords(), dataDragon.getNormals(), dataDragon.getIndices());
-        TexturedModel staticModelDragon = new TexturedModel(modelDragon, new ModelTexture(loader.loadTexture("textureDragon")));
-        ModelTexture textureDragon = staticModelDragon.getTexture();
-        textureDragon.setShineDamper(100);
-        textureDragon.setReflectivity(100);
-        Entity entityDragon = new Entity(staticModelDragon, new Vector3f(0, 0, -25), 0, 0, 0, 1);
-        entities.add(entityDragon);
+        ModelData dataBunny = OBJFileLoader.loadOBJ("modelBunny");
+        RawModel modelBunny = loader.loadToVAO(dataBunny.getVertices(), dataBunny.getTextureCoords(), dataBunny.getNormals(), dataBunny.getIndices());
+        TexturedModel staticModelBunny = new TexturedModel(modelBunny, new ModelTexture(loader.loadTexture("textureBunny")));
+        ModelTexture textureBunny = staticModelBunny.getTexture();
+        textureBunny.setShineDamper(100);
+        textureBunny.setReflectivity(100);
+        Entity entityBunny = new Entity(staticModelBunny, new Vector3f(0, 0, -25), 0, 0, 0, 0.2f);
+        entities.add(entityBunny);
 
         //Low poly apple tree.
         ModelData dataLowPolyTree = OBJFileLoader.loadOBJ("modelLowPolyTree");
@@ -46,8 +57,6 @@ public class MainGameLoop {
         ModelTexture textureLowPolyTree = staticModelLowPolyTree.getTexture();
         textureLowPolyTree.setShineDamper(100);
         textureLowPolyTree.setReflectivity(100);
-        Entity entityLowPolyTree = new Entity(staticModelLowPolyTree, new Vector3f(-10, 0, -25), 0, 0, 0, 0.1f);
-        entities.add(entityLowPolyTree);
 
         //Spikey tree.
         ModelData dataTree = OBJFileLoader.loadOBJ("modelTree");
@@ -56,8 +65,6 @@ public class MainGameLoop {
         ModelTexture textureTree = staticModelTree.getTexture();
         textureTree.setShineDamper(100);
         textureTree.setReflectivity(100);
-        Entity entityTree = new Entity(staticModelTree, new Vector3f(-15, 0, -25), 0, 0, 0, 1);
-        entities.add(entityTree);
 
         //Grass.
         ModelData dataGrass = OBJFileLoader.loadOBJ("modelGrass");
@@ -68,8 +75,6 @@ public class MainGameLoop {
         textureGrass.setUseFakeLighting(true);
         textureGrass.setShineDamper(100);
         textureGrass.setReflectivity(100);
-        Entity entityGrass = new Entity(staticModelGrass, new Vector3f(-10, 0, -25), 0, 0, 0, 1);
-        entities.add(entityGrass);
 
         //Fern.
         ModelData dataFern = OBJFileLoader.loadOBJ("modelFern");
@@ -79,18 +84,20 @@ public class MainGameLoop {
         textureFern.setHasTransparency(true);
         textureFern.setShineDamper(100);
         textureFern.setReflectivity(100);
-        Entity entityFern = new Entity(staticModelFern, new Vector3f(-10, 0, -20), 0, 0, 0, 1);
-        entities.add(entityFern);
 
         //Random entities.
         Random random = new Random();
-        for (int i = 0; i < 500; i++)
-            entities.add(new Entity(staticModelGrass, new Vector3f(random.nextFloat() * 800 - 400, 0, random.nextFloat() * -600), 0, 0, 0, 1));
+        for (int i = 0; i < 50; i++) {
+            entities.add(new Entity(staticModelGrass, new Vector3f(random.nextFloat() * 200 - 100, 0, random.nextFloat() * -200), 0, 0, 0, 1));
+            entities.add(new Entity(staticModelFern, new Vector3f(random.nextFloat() * 200 - 100, 0, random.nextFloat() * -200), 0, 0, 0, 0.5f));
+            entities.add(new Entity(staticModelTree, new Vector3f(random.nextFloat() * 200 - 100, 0, random.nextFloat() * -200), 0, 0, 0, 4));
+            entities.add(new Entity(staticModelLowPolyTree, new Vector3f(random.nextFloat() * 200 - 100, 0, random.nextFloat() * -200), 0, 0, 0, 0.3f));
+        }
 
-        Light light = new Light(new Vector3f(200, 200, 100), new Vector3f(1, 1, 1));
+        Light light = new Light(new Vector3f(200, 200, 100), new Vector3f(1, 0.6f, 0.6f));
 
-        Terrain terrain = new Terrain(-1, -1, loader, new ModelTexture(loader.loadTexture("textureTerrainGrass")));
-        Terrain terrain2 = new Terrain(0, -1, loader, new ModelTexture(loader.loadTexture("textureTerrainGrass")));
+        Terrain terrain = new Terrain(-1, -1, loader, texturePack, blendMap);
+        Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap);
 
         Camera camera = new Camera();
         MasterRenderer renderer = new MasterRenderer();
