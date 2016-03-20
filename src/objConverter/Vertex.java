@@ -1,5 +1,6 @@
 package objConverter;
 
+
 import org.lwjgl.util.vector.Vector3f;
 
 public class Vertex {
