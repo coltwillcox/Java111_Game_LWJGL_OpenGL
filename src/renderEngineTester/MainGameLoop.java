@@ -3,6 +3,7 @@ package renderEngineTester;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
+import entities.Player;
 import models.TexturedModel;
 import objConverter.ModelData;
 import objConverter.OBJFileLoader;
@@ -94,6 +95,8 @@ public class MainGameLoop {
             entities.add(new Entity(staticModelLowPolyTree, new Vector3f(random.nextFloat() * 200 - 100, 0, random.nextFloat() * -200), 0, 0, 0, 0.3f));
         }
 
+        Player player = new Player(staticModelBunny, new Vector3f(0, 0, -30), 0, 0, 0, 0.5f);
+
         Light light = new Light(new Vector3f(200, 200, 100), new Vector3f(1, 0.6f, 0.6f));
 
         Terrain terrain = new Terrain(-1, -1, loader, texturePack, blendMap);
@@ -106,6 +109,8 @@ public class MainGameLoop {
         while (!Display.isCloseRequested()) {
             //entityDragon.increaseRotation(0, 0.1f, 0);
             camera.move();
+            player.move();
+            renderer.processEntity(player);
             renderer.processTerrain(terrain);
             renderer.processTerrain(terrain2);
             for (Entity e:entities)renderer.processEntity(e);

@@ -1,8 +1,5 @@
 package entities;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
 /**
@@ -11,7 +8,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 public class Camera {
 
-    private Vector3f position = new Vector3f(0, 1, 0);
+    private Vector3f position = new Vector3f(0, 3, 0);
     private float pitch; //Up and down look.
     private float yaw; //Left and right look.
     private float roll;
@@ -24,6 +21,7 @@ public class Camera {
     }
 
     public void move() {
+        /*
         yaw = -(Display.getWidth() - Mouse.getX() / 2);
         pitch = (Display.getHeight() / 2) - Mouse.getY();
 
@@ -52,7 +50,7 @@ public class Camera {
             position.z -= (float) Math.sin(Math.toRadians(yaw)) * speed;
             position.x -= (float) Math.cos(Math.toRadians(yaw)) * speed;
         }
-
+        */
     }
 
     public Vector3f getPosition() {
