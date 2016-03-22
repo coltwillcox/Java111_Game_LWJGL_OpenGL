@@ -49,7 +49,7 @@ public class MainGameLoop {
         ModelTexture textureCharizard = staticModelCharizard.getTexture();
         textureCharizard.setShineDamper(100);
         textureCharizard.setReflectivity(100);
-        Entity entityCharizard = new Entity(staticModelCharizard, new Vector3f(10, 0, -35), 0, 0, 0, 0.5f);
+        Entity entityCharizard = new Entity(staticModelCharizard, new Vector3f(-50, -2, -50), 0, 0, 0, 0.5f);
         entities.add(entityCharizard);
 
         //Low poly apple tree.
@@ -75,8 +75,6 @@ public class MainGameLoop {
         ModelTexture textureGrass = staticModelGrass.getTexture();
         textureGrass.setHasTransparency(true);
         textureGrass.setUseFakeLighting(true);
-        textureGrass.setShineDamper(100);
-        textureGrass.setReflectivity(100);
 
         //Fern.
         ModelData dataFern = OBJFileLoader.loadOBJ("modelFern");
@@ -84,40 +82,70 @@ public class MainGameLoop {
         TexturedModel staticModelFern = new TexturedModel(modelFern, new ModelTexture(loader.loadTexture("textureFern")));
         ModelTexture textureFern = staticModelFern.getTexture();
         textureFern.setHasTransparency(true);
-        textureFern.setShineDamper(100);
-        textureFern.setReflectivity(100);
 
-        //Random entities.
-        Random random = new Random();
-        for (int i = 0; i < 50; i++) {
-            entities.add(new Entity(staticModelGrass, new Vector3f(random.nextFloat() * 200 - 100, 0, random.nextFloat() * -200), 0, 0, 0, 1));
-            entities.add(new Entity(staticModelFern, new Vector3f(random.nextFloat() * 200 - 100, 0, random.nextFloat() * -200), 0, 0, 0, 0.5f));
-            entities.add(new Entity(staticModelTree, new Vector3f(random.nextFloat() * 200 - 100, 0, random.nextFloat() * -200), 0, 0, 0, 5));
-            entities.add(new Entity(staticModelLowPolyTree, new Vector3f(random.nextFloat() * 200 - 100, 0, random.nextFloat() * -200), 0, 0, 0, 0.2f));
-        }
+        //Box.
+        ModelData dataBox = OBJFileLoader.loadOBJ("modelBox");
+        RawModel modelBox = loader.loadToVAO(dataBox.getVertices(), dataBox.getTextureCoords(), dataBox.getNormals(), dataBox.getIndices());
+        TexturedModel staticModelBox = new TexturedModel(modelBox, new ModelTexture(loader.loadTexture("textureBox")));
+        ModelTexture textureBox = staticModelBox.getTexture();
+        textureBox.setHasTransparency(true);
+        textureBox.setShineDamper(100);
+        textureBox.setReflectivity(100);
 
         //Player
         ModelData dataPlayer = OBJFileLoader.loadOBJ("modelPlayer");
         RawModel modelPlayer = loader.loadToVAO(dataPlayer.getVertices(), dataPlayer.getTextureCoords(), dataPlayer.getNormals(), dataPlayer.getIndices());
         TexturedModel staticModelPlayer = new TexturedModel(modelPlayer, new ModelTexture(loader.loadTexture("texturePlayer")));
-        Player player = new Player(staticModelPlayer, new Vector3f(0, 0, -30), 0, 0, 0, 0.5f);
+        Player player = new Player(staticModelPlayer, new Vector3f(-30, 0, -30), 0, 225, 0, 0.5f);
 
         Camera camera = new Camera(player);
         Light light = new Light(new Vector3f(200, 200, 100), new Vector3f(1, 0.6f, 0.6f));
 
         Terrain terrain = new Terrain(-1, -1, loader, texturePack, blendMap, "mapHeight");
-        Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap, "mapHeight");
+        //Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap, "mapHeight");
+
+        //Random entities.
+        Random random = new Random();
+        float x;
+        float y;
+        float z;
+        for (int i = 0; i < 200; i++) {
+            x = random.nextFloat() * 800 - 400;
+            z = random.nextFloat() * -600;
+            y = terrain.getHeightOfTerrain(x, z);
+            entities.add(new Entity(staticModelGrass, new Vector3f(x, y, z), 0, 0, 0, 1));
+
+            x = random.nextFloat() * 800 - 400;
+            z = random.nextFloat() * -600;
+            y = terrain.getHeightOfTerrain(x, z);
+            entities.add(new Entity(staticModelFern, new Vector3f(x, y, z), 0, 0, 0, 1));
+
+            x = random.nextFloat() * 800 - 400;
+            z = random.nextFloat() * -600;
+            y = terrain.getHeightOfTerrain(x, z);
+            entities.add(new Entity(staticModelTree, new Vector3f(x, y, z), 0, 0, 0, 10));
+
+            x = random.nextFloat() * 800 - 400;
+            z = random.nextFloat() * -600;
+            y = terrain.getHeightOfTerrain(x, z);
+            entities.add(new Entity(staticModelLowPolyTree, new Vector3f(x, y, z), 0, 0, 0, 1));
+
+            x = random.nextFloat() * 800 - 400;
+            z = random.nextFloat() * -600;
+            y = terrain.getHeightOfTerrain(x, z) + 2;
+            entities.add(new Entity(staticModelBox, new Vector3f(x, y, z), 0, 0, 0, 2));
+        }
 
         MasterRenderer renderer = new MasterRenderer();
 
         //Game logic, render...
         while (!Display.isCloseRequested()) {
-            //entityDragon.increaseRotation(0, 0.1f, 0);
+            entityCharizard.increaseRotation(0, 0.1f, 0);
             camera.move();
-            player.move();
+            player.move(terrain);
             renderer.processEntity(player);
             renderer.processTerrain(terrain);
-            renderer.processTerrain(terrain2);
+            //renderer.processTerrain(terrain2);
             for (Entity e:entities)renderer.processEntity(e);
             renderer.render(light, camera);
             DisplayManager.updateDisplay();
