@@ -29,8 +29,8 @@ public class OBJFileLoader {
         List<Vector3f> normals = new ArrayList<>();
         List<Integer> indices = new ArrayList<>();
         try {
-            while (true) {
-                line = reader.readLine();
+            line = reader.readLine();
+            while (line != null) {
                 if (line.startsWith("v ")) {
                     String[] currentLine = line.split(" ");
                     Vector3f vertex = new Vector3f((float) Float.valueOf(currentLine[1]), (float) Float.valueOf(currentLine[2]), (float) Float.valueOf(currentLine[3]));
@@ -45,17 +45,14 @@ public class OBJFileLoader {
                     Vector3f normal = new Vector3f((float) Float.valueOf(currentLine[1]), (float) Float.valueOf(currentLine[2]), (float) Float.valueOf(currentLine[3]));
                     normals.add(normal);
                 } else if (line.startsWith("f ")) {
-                    break;
+                    String[] currentLine = line.split(" ");
+                    String[] vertex1 = currentLine[1].split("/");
+                    String[] vertex2 = currentLine[2].split("/");
+                    String[] vertex3 = currentLine[3].split("/");
+                    processVertex(vertex1, vertices, indices);
+                    processVertex(vertex2, vertices, indices);
+                    processVertex(vertex3, vertices, indices);
                 }
-            }
-            while (line != null && line.startsWith("f ")) {
-                String[] currentLine = line.split(" ");
-                String[] vertex1 = currentLine[1].split("/");
-                String[] vertex2 = currentLine[2].split("/");
-                String[] vertex3 = currentLine[3].split("/");
-                processVertex(vertex1, vertices, indices);
-                processVertex(vertex2, vertices, indices);
-                processVertex(vertex3, vertices, indices);
                 line = reader.readLine();
             }
             reader.close();

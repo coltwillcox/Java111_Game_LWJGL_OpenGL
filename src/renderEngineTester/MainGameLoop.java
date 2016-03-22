@@ -7,6 +7,7 @@ import entities.Player;
 import models.TexturedModel;
 import objConverter.ModelData;
 import objConverter.OBJFileLoader;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 import renderEngine.DisplayManager;
@@ -41,15 +42,15 @@ public class MainGameLoop {
 
         List<Entity> entities = new ArrayList<>();
 
-        //Dragon.
-        ModelData dataBunny = OBJFileLoader.loadOBJ("modelBunny");
-        RawModel modelBunny = loader.loadToVAO(dataBunny.getVertices(), dataBunny.getTextureCoords(), dataBunny.getNormals(), dataBunny.getIndices());
-        TexturedModel staticModelBunny = new TexturedModel(modelBunny, new ModelTexture(loader.loadTexture("textureBunny")));
-        ModelTexture textureBunny = staticModelBunny.getTexture();
-        textureBunny.setShineDamper(100);
-        textureBunny.setReflectivity(100);
-        Entity entityBunny = new Entity(staticModelBunny, new Vector3f(0, 0, -25), 0, 0, 0, 0.2f);
-        entities.add(entityBunny);
+        //Charizard.
+        ModelData dataCharizard = OBJFileLoader.loadOBJ("modelCharizard");
+        RawModel modelCharizard = loader.loadToVAO(dataCharizard.getVertices(), dataCharizard.getTextureCoords(), dataCharizard.getNormals(), dataCharizard.getIndices());
+        TexturedModel staticModelCharizard = new TexturedModel(modelCharizard, new ModelTexture(loader.loadTexture("textureCharizard")));
+        ModelTexture textureCharizard = staticModelCharizard.getTexture();
+        textureCharizard.setShineDamper(100);
+        textureCharizard.setReflectivity(100);
+        Entity entityCharizard = new Entity(staticModelCharizard, new Vector3f(10, 0, -35), 0, 0, 0, 0.5f);
+        entities.add(entityCharizard);
 
         //Low poly apple tree.
         ModelData dataLowPolyTree = OBJFileLoader.loadOBJ("modelLowPolyTree");
@@ -91,18 +92,22 @@ public class MainGameLoop {
         for (int i = 0; i < 50; i++) {
             entities.add(new Entity(staticModelGrass, new Vector3f(random.nextFloat() * 200 - 100, 0, random.nextFloat() * -200), 0, 0, 0, 1));
             entities.add(new Entity(staticModelFern, new Vector3f(random.nextFloat() * 200 - 100, 0, random.nextFloat() * -200), 0, 0, 0, 0.5f));
-            entities.add(new Entity(staticModelTree, new Vector3f(random.nextFloat() * 200 - 100, 0, random.nextFloat() * -200), 0, 0, 0, 4));
-            entities.add(new Entity(staticModelLowPolyTree, new Vector3f(random.nextFloat() * 200 - 100, 0, random.nextFloat() * -200), 0, 0, 0, 0.3f));
+            entities.add(new Entity(staticModelTree, new Vector3f(random.nextFloat() * 200 - 100, 0, random.nextFloat() * -200), 0, 0, 0, 5));
+            entities.add(new Entity(staticModelLowPolyTree, new Vector3f(random.nextFloat() * 200 - 100, 0, random.nextFloat() * -200), 0, 0, 0, 0.2f));
         }
 
-        Player player = new Player(staticModelBunny, new Vector3f(0, 0, -30), 0, 0, 0, 0.5f);
+        //Player
+        ModelData dataPlayer = OBJFileLoader.loadOBJ("modelPlayer");
+        RawModel modelPlayer = loader.loadToVAO(dataPlayer.getVertices(), dataPlayer.getTextureCoords(), dataPlayer.getNormals(), dataPlayer.getIndices());
+        TexturedModel staticModelPlayer = new TexturedModel(modelPlayer, new ModelTexture(loader.loadTexture("texturePlayer")));
+        Player player = new Player(staticModelPlayer, new Vector3f(0, 0, -30), 0, 0, 0, 0.5f);
 
+        Camera camera = new Camera(player);
         Light light = new Light(new Vector3f(200, 200, 100), new Vector3f(1, 0.6f, 0.6f));
 
         Terrain terrain = new Terrain(-1, -1, loader, texturePack, blendMap);
         Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap);
 
-        Camera camera = new Camera();
         MasterRenderer renderer = new MasterRenderer();
 
         //Game logic, render...
