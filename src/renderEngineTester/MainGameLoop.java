@@ -45,6 +45,7 @@ public class MainGameLoop {
         guis.add(armor);
         GuiRenderer guiRenderer = new GuiRenderer(loader);
 
+        //Terrains.
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("textureTerrainGrass"));
         TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("textureTerrainMud"));
         TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("textureTerrainGrassFlowers"));
@@ -114,9 +115,12 @@ public class MainGameLoop {
         texturePlayer.setReflectivity(100);
         Player player = new Player(staticModelPlayer, new Vector3f(-30, 0, -30), 0, 225, 0, 0.5f);
 
-        //Camera! Light!
+        //Light! Camera!
+        List<Light> lights = new ArrayList<>();
+        lights.add(new Light(new Vector3f(0, 10000, -7000), new Vector3f(1, 1, 1)));
+        lights.add(new Light(new Vector3f(-200, 10, 200), new Vector3f(10, 0, 0)));
+        lights.add(new Light(new Vector3f(200, 10, 200), new Vector3f(0, 0, 10)));
         Camera camera = new Camera(player);
-        Light light = new Light(new Vector3f(200, 200, 100), new Vector3f(1, 0.6f, 0.6f));
 
         //Random entities.
         Random random = new Random();
@@ -161,7 +165,7 @@ public class MainGameLoop {
             renderer.processTerrain(terrain);
             //renderer.processTerrain(terrain2);
             for (Entity e : entities) renderer.processEntity(e);
-            renderer.render(light, camera);
+            renderer.render(lights, camera);
             guiRenderer.render(guis);
             DisplayManager.updateDisplay();
         }

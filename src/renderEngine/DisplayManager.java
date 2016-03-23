@@ -23,7 +23,7 @@ public class DisplayManager {
     public static void createDisplay() {
         ContextAttribs attribs = new ContextAttribs(3,2).withForwardCompatible(true).withProfileCore(true); //OpenGL version to use.
         try {
-            Display.setTitle("Strip");
+            Display.setTitle("NiSamNeZnamKakoSamOsnovnuŠkoluZavršio");
             Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
             Display.create(new PixelFormat(), attribs);
         } catch (LWJGLException e) {
