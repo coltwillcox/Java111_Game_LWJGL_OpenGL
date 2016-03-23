@@ -7,6 +7,7 @@ package textures;
 public class ModelTexture {
 
     private int textureID;
+    private int numberOfRows = 1; //Default is one, if image (atlas) contains only one texture.
     private float shineDamper = 1;
     private float reflectivity = 0;
     private boolean hasTransparency = false; //For rendering back of textures.
@@ -52,6 +53,14 @@ public class ModelTexture {
 
     public void setUseFakeLighting(boolean useFakeLighting) {
         this.useFakeLighting = useFakeLighting;
+    }
+
+    public int getNumberOfRows() {
+        return numberOfRows;
+    }
+
+    public void setNumberOfRows(int numberOfRows) {
+        this.numberOfRows = numberOfRows;
     }
 
 }

@@ -15,10 +15,22 @@ public class Entity {
     private float rotY;
     private float rotZ;
     private float scale;
+    private int textureIndex = 0; //Texture number from atlas (eg. first row = 0, 1, 2, second row = 3, 4, 5, and third row = 6, 7, 8). If one texture is in image, it is/will be 0.
 
     //Constructor.
     public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
         this.model = model;
+        this.position = position;
+        this.rotX = rotX;
+        this.rotY = rotY;
+        this.rotZ = rotZ;
+        this.scale = scale;
+    }
+
+    //Constructor 2, with texture index.
+    public Entity(TexturedModel model, int textureIndex, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
+        this.model = model;
+        this.textureIndex = textureIndex;
         this.position = position;
         this.rotX = rotX;
         this.rotY = rotY;
@@ -36,6 +48,17 @@ public class Entity {
         this.rotX += dx;
         this.rotY += dy;
         this.rotZ += dz;
+    }
+
+    //Getters and setters.
+    public float getTextureXOffset(){
+        int column = textureIndex % model.getTexture().getNumberOfRows();
+        return (float) column / (float) model.getTexture().getNumberOfRows();
+    }
+
+    public float getTextureYOffset(){
+        int row = textureIndex / model.getTexture().getNumberOfRows(); //No need to float because they're both integers.
+        return (float) row / (float) model.getTexture().getNumberOfRows();
     }
 
     public TexturedModel getModel() {

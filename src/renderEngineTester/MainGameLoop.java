@@ -40,7 +40,7 @@ public class MainGameLoop {
         TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("mapBlend"));
 
-        List<Entity> entities = new ArrayList<>();
+        List<Entity> entities = new ArrayList<>(); //List to keep all entities. Manual and random created ones.
 
         //Charizard.
         ModelData dataCharizard = OBJFileLoader.loadOBJ("modelCharizard");
@@ -55,18 +55,16 @@ public class MainGameLoop {
         //Low poly apple tree.
         ModelData dataLowPolyTree = OBJFileLoader.loadOBJ("modelLowPolyTree");
         RawModel modelLowPolyTree = loader.loadToVAO(dataLowPolyTree.getVertices(), dataLowPolyTree.getTextureCoords(), dataLowPolyTree.getNormals(), dataLowPolyTree.getIndices());
-        TexturedModel staticModelLowPolyTree = new TexturedModel(modelLowPolyTree, new ModelTexture(loader.loadTexture("textureLowPolyTree")));
+        TexturedModel staticModelLowPolyTree = new TexturedModel(modelLowPolyTree, new ModelTexture(loader.loadTexture("textureAtlasLowPolyTree")));
         ModelTexture textureLowPolyTree = staticModelLowPolyTree.getTexture();
-        textureLowPolyTree.setShineDamper(100);
-        textureLowPolyTree.setReflectivity(100);
+        textureLowPolyTree.setNumberOfRows(2);
 
         //Spikey tree.
         ModelData dataTree = OBJFileLoader.loadOBJ("modelTree");
         RawModel modelTree = loader.loadToVAO(dataTree.getVertices(), dataTree.getTextureCoords(), dataTree.getNormals(), dataTree.getIndices());
-        TexturedModel staticModelTree = new TexturedModel(modelTree, new ModelTexture(loader.loadTexture("textureTree")));
+        TexturedModel staticModelTree = new TexturedModel(modelTree, new ModelTexture(loader.loadTexture("textureAtlasTree")));
         ModelTexture textureTree = staticModelTree.getTexture();
-        textureTree.setShineDamper(100);
-        textureTree.setReflectivity(100);
+        textureTree.setNumberOfRows(2);
 
         //Grass.
         ModelData dataGrass = OBJFileLoader.loadOBJ("modelGrass");
@@ -79,8 +77,9 @@ public class MainGameLoop {
         //Fern.
         ModelData dataFern = OBJFileLoader.loadOBJ("modelFern");
         RawModel modelFern = loader.loadToVAO(dataFern.getVertices(), dataFern.getTextureCoords(), dataFern.getNormals(), dataFern.getIndices());
-        TexturedModel staticModelFern = new TexturedModel(modelFern, new ModelTexture(loader.loadTexture("textureFern")));
+        TexturedModel staticModelFern = new TexturedModel(modelFern, new ModelTexture(loader.loadTexture("textureAtlasFern")));
         ModelTexture textureFern = staticModelFern.getTexture();
+        textureFern.setNumberOfRows(2);
         textureFern.setHasTransparency(true);
 
         //Box.
@@ -96,7 +95,11 @@ public class MainGameLoop {
         ModelData dataPlayer = OBJFileLoader.loadOBJ("modelPlayer");
         RawModel modelPlayer = loader.loadToVAO(dataPlayer.getVertices(), dataPlayer.getTextureCoords(), dataPlayer.getNormals(), dataPlayer.getIndices());
         TexturedModel staticModelPlayer = new TexturedModel(modelPlayer, new ModelTexture(loader.loadTexture("texturePlayer")));
+        ModelTexture texturePlayer = staticModelPlayer.getTexture();
+        texturePlayer.setShineDamper(100);
+        texturePlayer.setReflectivity(100);
         Player player = new Player(staticModelPlayer, new Vector3f(-30, 0, -30), 0, 225, 0, 0.5f);
+
 
         Camera camera = new Camera(player);
         Light light = new Light(new Vector3f(200, 200, 100), new Vector3f(1, 0.6f, 0.6f));
@@ -118,17 +121,17 @@ public class MainGameLoop {
             x = random.nextFloat() * 800 - 400;
             z = random.nextFloat() * -600;
             y = terrain.getHeightOfTerrain(x, z);
-            entities.add(new Entity(staticModelFern, new Vector3f(x, y, z), 0, 0, 0, 1));
+            entities.add(new Entity(staticModelFern, random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 1));
 
             x = random.nextFloat() * 800 - 400;
             z = random.nextFloat() * -600;
             y = terrain.getHeightOfTerrain(x, z);
-            entities.add(new Entity(staticModelTree, new Vector3f(x, y, z), 0, 0, 0, 10));
+            entities.add(new Entity(staticModelTree, random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 10));
 
             x = random.nextFloat() * 800 - 400;
             z = random.nextFloat() * -600;
             y = terrain.getHeightOfTerrain(x, z);
-            entities.add(new Entity(staticModelLowPolyTree, new Vector3f(x, y, z), 0, 0, 0, 1));
+            entities.add(new Entity(staticModelLowPolyTree, random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 1));
 
             x = random.nextFloat() * 800 - 400;
             z = random.nextFloat() * -600;
