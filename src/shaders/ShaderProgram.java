@@ -32,7 +32,7 @@ public abstract class ShaderProgram {
         bindAttributes();
         GL20.glLinkProgram(programID);
         GL20.glValidateProgram(programID);
-        getAllUniformaLocations();
+        getAllUniformLocations();
     }
 
     public void start() {
@@ -86,7 +86,7 @@ public abstract class ShaderProgram {
         return GL20.glGetUniformLocation(programID, uniformName);
     }
 
-    protected abstract void getAllUniformaLocations();
+    protected abstract void getAllUniformLocations();
 
     protected void loadFloat(int location, float value) {
         GL20.glUniform1f(location, value);

@@ -42,7 +42,7 @@ public class TerrainShader extends ShaderProgram {
     }
 
     @Override
-    protected void getAllUniformaLocations() {
+    protected void getAllUniformLocations() {
         locationTransformationMatrix = super.getUniformLocation("transformationMatrix");
         locationProjectionMatrix = super.getUniformLocation("projectionMatrix");
         locationViewMatrix = super.getUniformLocation("viewMatrix");

@@ -22,6 +22,15 @@ public class Maths {
         return matrix;
     }
 
+    //Overload. Used for GUI rendering.
+    public static Matrix4f createTransformationMatrix(Vector2f translation, Vector2f scale) {
+        Matrix4f matrix = new Matrix4f();
+        matrix.setIdentity();
+        Matrix4f.translate(translation, matrix, matrix);
+        Matrix4f.scale(new Vector3f(scale.x, scale.y, 1f), matrix, matrix);
+        return matrix;
+    }
+
     public static Matrix4f createViewMatrix(Camera camera) {
         Matrix4f viewMatrix = new Matrix4f();
         viewMatrix.setIdentity();
@@ -33,6 +42,7 @@ public class Maths {
         return viewMatrix;
     }
 
+    //Method used for calculating heights of the terrain (triangles).
     public static float barryCentric(Vector3f p1, Vector3f p2, Vector3f p3, Vector2f pos) {
         float det = (p2.getZ() - p3.getZ()) * (p1.getX() - p3.getX()) + (p3.getX() - p2.getX()) * (p1.getZ() - p3.getZ());
         float l1 = ((p2.getZ() - p3.getZ()) * (pos.getX() - p3.getX()) + (p3.getX() - p2.getX()) * (pos.getY() - p3.getZ())) / det;

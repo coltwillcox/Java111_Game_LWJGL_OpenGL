@@ -4,15 +4,17 @@ import entities.Camera;
 import entities.Entity;
 import entities.Light;
 import entities.Player;
+import guis.GuiRenderer;
+import guis.GuiTexture;
+import models.RawModel;
 import models.TexturedModel;
 import objConverter.ModelData;
 import objConverter.OBJFileLoader;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
-import models.RawModel;
 import renderEngine.MasterRenderer;
 import terrains.Terrain;
 import textures.ModelTexture;
@@ -33,12 +35,24 @@ public class MainGameLoop {
         DisplayManager.createDisplay();
         Loader loader = new Loader();
 
+        //GUI.
+        List<GuiTexture> guis = new ArrayList<>(); //List for all GUI objects (images).
+        GuiTexture coins = new GuiTexture(loader.loadTexture("textureGuiCoins"), new Vector2f(-0.8f, 0.85f), new Vector2f(0.25f, 0.35f)); //Texture, position, scale.
+        guis.add(coins);
+        GuiTexture health = new GuiTexture(loader.loadTexture("textureGuiHealth"), new Vector2f(-0.7f, -0.85f), new Vector2f(0.25f, 0.35f));
+        guis.add(health);
+        GuiTexture armor = new GuiTexture(loader.loadTexture("textureGuiArmor"), new Vector2f(0.7f, -0.85f), new Vector2f(0.25f, 0.35f));
+        guis.add(armor);
+        GuiRenderer guiRenderer = new GuiRenderer(loader);
+
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("textureTerrainGrass"));
         TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("textureTerrainMud"));
         TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("textureTerrainGrassFlowers"));
         TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("textureTerrainPath"));
         TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("mapBlend"));
+        Terrain terrain = new Terrain(-1, -1, loader, texturePack, blendMap, "mapHeight");
+        //Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap, "mapHeight");
 
         List<Entity> entities = new ArrayList<>(); //List to keep all entities. Manual and random created ones.
 
@@ -100,12 +114,9 @@ public class MainGameLoop {
         texturePlayer.setReflectivity(100);
         Player player = new Player(staticModelPlayer, new Vector3f(-30, 0, -30), 0, 225, 0, 0.5f);
 
-
+        //Camera! Light!
         Camera camera = new Camera(player);
         Light light = new Light(new Vector3f(200, 200, 100), new Vector3f(1, 0.6f, 0.6f));
-
-        Terrain terrain = new Terrain(-1, -1, loader, texturePack, blendMap, "mapHeight");
-        //Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap, "mapHeight");
 
         //Random entities.
         Random random = new Random();
@@ -149,12 +160,14 @@ public class MainGameLoop {
             renderer.processEntity(player);
             renderer.processTerrain(terrain);
             //renderer.processTerrain(terrain2);
-            for (Entity e:entities)renderer.processEntity(e);
+            for (Entity e : entities) renderer.processEntity(e);
             renderer.render(light, camera);
+            guiRenderer.render(guis);
             DisplayManager.updateDisplay();
         }
 
         //Clear memory and close program.
+        guiRenderer.cleanUp();
         renderer.cleanUp();
         loader.cleanUp();
         DisplayManager.closeDisplay();
