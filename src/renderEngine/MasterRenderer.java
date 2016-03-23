@@ -25,7 +25,7 @@ public class MasterRenderer {
     private static final float FOV = 75;
     private static final float NEAR_PLANE = 0.1f;
     private static final float FAR_PLANE = 1000;
-    private static final float RED = (float) 153/255; //Easy to use with color pickers.
+    private static final float RED = (float) 102/255; //Easy to use with color pickers.
     private static final float GREEN = (float) 204/255;
     private static final float BLUE = (float) 255/255;
     private Matrix4f projectionMatrix;

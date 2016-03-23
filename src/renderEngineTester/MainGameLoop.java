@@ -20,7 +20,6 @@ import terrains.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -74,12 +73,12 @@ public class MainGameLoop {
         ModelTexture textureLowPolyTree = staticModelLowPolyTree.getTexture();
         textureLowPolyTree.setNumberOfRows(2);
 
-        //Spikey tree.
+        //Pine tree.
         ModelData dataTree = OBJFileLoader.loadOBJ("modelTree");
         RawModel modelTree = loader.loadToVAO(dataTree.getVertices(), dataTree.getTextureCoords(), dataTree.getNormals(), dataTree.getIndices());
-        TexturedModel staticModelTree = new TexturedModel(modelTree, new ModelTexture(loader.loadTexture("textureAtlasTree")));
+        TexturedModel staticModelTree = new TexturedModel(modelTree, new ModelTexture(loader.loadTexture("textureTree")));
         ModelTexture textureTree = staticModelTree.getTexture();
-        textureTree.setNumberOfRows(2);
+        textureTree.setHasTransparency(true);
 
         //Grass.
         ModelData dataGrass = OBJFileLoader.loadOBJ("modelGrass");
@@ -102,9 +101,14 @@ public class MainGameLoop {
         RawModel modelBox = loader.loadToVAO(dataBox.getVertices(), dataBox.getTextureCoords(), dataBox.getNormals(), dataBox.getIndices());
         TexturedModel staticModelBox = new TexturedModel(modelBox, new ModelTexture(loader.loadTexture("textureBox")));
         ModelTexture textureBox = staticModelBox.getTexture();
-        textureBox.setHasTransparency(true);
-        textureBox.setShineDamper(100);
-        textureBox.setReflectivity(100);
+
+        //Lamp.
+        ModelData dataLamp = OBJFileLoader.loadOBJ("modelLamp");
+        RawModel modelLamp = loader.loadToVAO(dataLamp.getVertices(), dataLamp.getTextureCoords(), dataLamp.getNormals(), dataLamp.getIndices());
+        TexturedModel staticModelLamp = new TexturedModel(modelLamp, new ModelTexture(loader.loadTexture("textureLamp")));
+        ModelTexture textureLamp = staticModelLamp.getTexture();
+        textureLamp.setUseFakeLighting(true);
+        entities.add(new Entity(staticModelLamp, new Vector3f(-80, terrain.getHeightOfTerrain(-80, -80), -80), 0, 0, 0, 1));
 
         //Player
         ModelData dataPlayer = OBJFileLoader.loadOBJ("modelPlayer");
@@ -115,11 +119,10 @@ public class MainGameLoop {
         texturePlayer.setReflectivity(100);
         Player player = new Player(staticModelPlayer, new Vector3f(-30, 0, -30), 0, 225, 0, 0.5f);
 
-        //Light! Camera!
+        //Lights! Camera!
         List<Light> lights = new ArrayList<>();
-        lights.add(new Light(new Vector3f(0, 10000, -7000), new Vector3f(1, 1, 1)));
-        lights.add(new Light(new Vector3f(-200, 10, 200), new Vector3f(10, 0, 0)));
-        lights.add(new Light(new Vector3f(200, 10, 200), new Vector3f(0, 0, 10)));
+        lights.add(new Light(new Vector3f(1000, 1000, 7000), new Vector3f(0.4f, 0.8f, 1.0f))); //Sun. :)
+        lights.add(new Light(new Vector3f(-80, terrain.getHeightOfTerrain(-80, -80) + 14, -80), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f))); //Lamp light.
         Camera camera = new Camera(player);
 
         //Random entities.
@@ -141,7 +144,7 @@ public class MainGameLoop {
             x = random.nextFloat() * 800 - 400;
             z = random.nextFloat() * -600;
             y = terrain.getHeightOfTerrain(x, z);
-            entities.add(new Entity(staticModelTree, random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 10));
+            entities.add(new Entity(staticModelTree, random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 1.5f));
 
             x = random.nextFloat() * 800 - 400;
             z = random.nextFloat() * -600;
