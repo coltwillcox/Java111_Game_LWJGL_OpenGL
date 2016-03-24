@@ -7,7 +7,6 @@ import renderEngine.Loader;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
 import toolbox.Maths;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;

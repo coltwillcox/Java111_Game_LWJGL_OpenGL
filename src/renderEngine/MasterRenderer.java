@@ -75,6 +75,14 @@ public class MasterRenderer {
         entities.clear();
     }
 
+    public void renderScene(List<Entity> entities, List<Terrain> terrains, List<Light> lights, Camera camera) {
+        for (Terrain terrain: terrains)
+            processTerrain(terrain);
+        for (Entity entity:entities)
+            processEntity(entity);
+        render(lights, camera);
+    }
+
     //Called once every frame.
     public void prepare() {
         GL11.glEnable(GL11.GL_DEPTH_TEST);

@@ -21,6 +21,9 @@ import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
 import toolbox.MousePicker;
+import water.WaterRenderer;
+import water.WaterShader;
+import water.WaterTile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +50,7 @@ public class MainGameLoop {
         GuiRenderer guiRenderer = new GuiRenderer(loader);
 
         //Terrain.
+        List<Terrain> terrains = new ArrayList<>();
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("textureTerrainGrass"));
         TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("textureTerrainMud"));
         TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("textureTerrainGrassFlowers"));
@@ -54,9 +58,10 @@ public class MainGameLoop {
         TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("mapBlend"));
         Terrain terrain = new Terrain(0, 0, loader, texturePack, blendMap, "mapHeight");
+        terrains.add(terrain);
 
+        //Entities
         List<Entity> entities = new ArrayList<>(); //List to keep all entities. Manual and random created ones.
-
         //Charizard.
         ModelData dataCharizard = OBJFileLoader.loadOBJ("modelCharizard");
         RawModel modelCharizard = loader.loadToVAO(dataCharizard.getVertices(), dataCharizard.getTextureCoords(), dataCharizard.getNormals(), dataCharizard.getIndices());
@@ -66,21 +71,18 @@ public class MainGameLoop {
         textureCharizard.setReflectivity(100);
         Entity entityCharizard = new Entity(staticModelCharizard, new Vector3f(50, terrain.getHeightOfTerrain(50, 50), 50), 0, 0, 0, 0.5f);
         entities.add(entityCharizard);
-
         //Low poly apple tree.
         ModelData dataLowPolyTree = OBJFileLoader.loadOBJ("modelLowPolyTree");
         RawModel modelLowPolyTree = loader.loadToVAO(dataLowPolyTree.getVertices(), dataLowPolyTree.getTextureCoords(), dataLowPolyTree.getNormals(), dataLowPolyTree.getIndices());
         TexturedModel staticModelLowPolyTree = new TexturedModel(modelLowPolyTree, new ModelTexture(loader.loadTexture("textureAtlasLowPolyTree")));
         ModelTexture textureLowPolyTree = staticModelLowPolyTree.getTexture();
         textureLowPolyTree.setNumberOfRows(2);
-
         //Pine tree.
         ModelData dataTree = OBJFileLoader.loadOBJ("modelTree");
         RawModel modelTree = loader.loadToVAO(dataTree.getVertices(), dataTree.getTextureCoords(), dataTree.getNormals(), dataTree.getIndices());
         TexturedModel staticModelTree = new TexturedModel(modelTree, new ModelTexture(loader.loadTexture("textureTree")));
         ModelTexture textureTree = staticModelTree.getTexture();
         textureTree.setHasTransparency(true);
-
         //Grass.
         ModelData dataGrass = OBJFileLoader.loadOBJ("modelGrass");
         RawModel modelGrass = loader.loadToVAO(dataGrass.getVertices(), dataGrass.getTextureCoords(), dataGrass.getNormals(), dataGrass.getIndices());
@@ -88,7 +90,6 @@ public class MainGameLoop {
         ModelTexture textureGrass = staticModelGrass.getTexture();
         textureGrass.setHasTransparency(true);
         textureGrass.setUseFakeLighting(true);
-
         //Fern.
         ModelData dataFern = OBJFileLoader.loadOBJ("modelFern");
         RawModel modelFern = loader.loadToVAO(dataFern.getVertices(), dataFern.getTextureCoords(), dataFern.getNormals(), dataFern.getIndices());
@@ -96,13 +97,11 @@ public class MainGameLoop {
         ModelTexture textureFern = staticModelFern.getTexture();
         textureFern.setNumberOfRows(2);
         textureFern.setHasTransparency(true);
-
         //Box.
         ModelData dataBox = OBJFileLoader.loadOBJ("modelBox");
         RawModel modelBox = loader.loadToVAO(dataBox.getVertices(), dataBox.getTextureCoords(), dataBox.getNormals(), dataBox.getIndices());
         TexturedModel staticModelBox = new TexturedModel(modelBox, new ModelTexture(loader.loadTexture("textureBox")));
         ModelTexture textureBox = staticModelBox.getTexture();
-
         //Lamp.
         ModelData dataLamp = OBJFileLoader.loadOBJ("modelLamp");
         RawModel modelLamp = loader.loadToVAO(dataLamp.getVertices(), dataLamp.getTextureCoords(), dataLamp.getNormals(), dataLamp.getIndices());
@@ -110,23 +109,7 @@ public class MainGameLoop {
         ModelTexture textureLamp = staticModelLamp.getTexture();
         textureLamp.setUseFakeLighting(true);
         entities.add(new Entity(staticModelLamp, new Vector3f(400, terrain.getHeightOfTerrain(400, 400), 400), 0, 0, 0, 1));
-
-        //Player
-        ModelData dataPlayer = OBJFileLoader.loadOBJ("modelPlayer");
-        RawModel modelPlayer = loader.loadToVAO(dataPlayer.getVertices(), dataPlayer.getTextureCoords(), dataPlayer.getNormals(), dataPlayer.getIndices());
-        TexturedModel staticModelPlayer = new TexturedModel(modelPlayer, new ModelTexture(loader.loadTexture("texturePlayer")));
-        ModelTexture texturePlayer = staticModelPlayer.getTexture();
-        texturePlayer.setShineDamper(100);
-        texturePlayer.setReflectivity(100);
-        Player player = new Player(staticModelPlayer, new Vector3f(10, 10, 10), 0, 45, 0, 0.5f);
-
-        //Lights! Camera!
-        List<Light> lights = new ArrayList<>();
-        lights.add(new Light(new Vector3f(1000, 1000, 7000), new Vector3f(0.4f, 0.8f, 1.0f))); //Sun. :)
-        lights.add(new Light(new Vector3f(400, terrain.getHeightOfTerrain(400, 400) + 14, 400), new Vector3f(2f, 2f, 0.1f), new Vector3f(1, 0.01f, 0.002f))); //Lamp light.
-        Camera camera = new Camera(player);
-
-        //Random entities.
+        //Random entities locations.
         Random random = new Random();
         float x;
         float y;
@@ -158,28 +141,52 @@ public class MainGameLoop {
             entities.add(new Entity(staticModelBox, new Vector3f(x, y, z), 0, 0, 0, 2));
         }
 
+        //Player
+        ModelData dataPlayer = OBJFileLoader.loadOBJ("modelPlayer");
+        RawModel modelPlayer = loader.loadToVAO(dataPlayer.getVertices(), dataPlayer.getTextureCoords(), dataPlayer.getNormals(), dataPlayer.getIndices());
+        TexturedModel staticModelPlayer = new TexturedModel(modelPlayer, new ModelTexture(loader.loadTexture("texturePlayer")));
+        ModelTexture texturePlayer = staticModelPlayer.getTexture();
+        texturePlayer.setShineDamper(100);
+        texturePlayer.setReflectivity(100);
+        Player player = new Player(staticModelPlayer, new Vector3f(700, 0, 700), 0, 225, 0, 0.5f);
+
+        //Lights! Camera!
+        List<Light> lights = new ArrayList<>();
+        lights.add(new Light(new Vector3f(1000, 1000, 7000), new Vector3f(0.4f, 0.8f, 1.0f))); //Sun. :)
+        lights.add(new Light(new Vector3f(400, terrain.getHeightOfTerrain(400, 400) + 14, 400), new Vector3f(2f, 2f, 0.1f), new Vector3f(1, 0.01f, 0.002f))); //Lamp light.
+        Camera camera = new Camera(player);
+
         MasterRenderer renderer = new MasterRenderer(loader);
         MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
 
-        //Game logic, render...
+        //Water.
+        WaterShader waterShader = new WaterShader();
+        WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix());
+        List<WaterTile> waterTiles = new ArrayList<>();
+        waterTiles.add(new WaterTile(700, 700, 0)); //x, z, height (or y).
+
+        //Game logic, rendering...
         while (!Display.isCloseRequested()) {
-            entityCharizard.increaseRotation(0, 0.1f, 0);
+            player.move(terrain);
             camera.move();
             picker.update();
+            renderer.renderScene(entities, terrains, lights, camera);
+            renderer.processEntity(player);
+
+            //Dragging Charizard.
+            entityCharizard.increaseRotation(0, 0.1f, 0);
             Vector3f terrainPoint = picker.getCurrentTerrainPoint();
             if (terrainPoint != null)
                 entityCharizard.setPosition(terrainPoint);
-            player.move(terrain);
-            renderer.processEntity(player);
-            renderer.processTerrain(terrain);
-            for (Entity e : entities)
-                renderer.processEntity(e);
-            renderer.render(lights, camera);
+
+            waterRenderer.render(waterTiles, camera);
+
             guiRenderer.render(guis);
             DisplayManager.updateDisplay();
         }
 
         //Clear memory and close program.
+        waterShader.cleanUp();
         guiRenderer.cleanUp();
         renderer.cleanUp();
         loader.cleanUp();
