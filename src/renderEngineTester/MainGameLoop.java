@@ -52,7 +52,9 @@ public class MainGameLoop {
         TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("mapBlend"));
         Terrain terrain = new Terrain(-1, -1, loader, texturePack, blendMap, "mapHeight");
-        //Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap, "mapHeight");
+        Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap, "mapHeight");
+        Terrain terrain3 = new Terrain(-1, 0, loader, texturePack, blendMap, "mapHeight");
+        Terrain terrain4 = new Terrain(0, 0, loader, texturePack, blendMap, "mapHeight");
 
         List<Entity> entities = new ArrayList<>(); //List to keep all entities. Manual and random created ones.
 
@@ -122,7 +124,7 @@ public class MainGameLoop {
         //Lights! Camera!
         List<Light> lights = new ArrayList<>();
         lights.add(new Light(new Vector3f(1000, 1000, 7000), new Vector3f(0.4f, 0.8f, 1.0f))); //Sun. :)
-        lights.add(new Light(new Vector3f(-80, terrain.getHeightOfTerrain(-80, -80) + 14, -80), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f))); //Lamp light.
+        lights.add(new Light(new Vector3f(-80, terrain.getHeightOfTerrain(-80, -80) + 14, -80), new Vector3f(2f, 2f, 0.1f), new Vector3f(1, 0.01f, 0.002f))); //Lamp light.
         Camera camera = new Camera(player);
 
         //Random entities.
@@ -157,7 +159,7 @@ public class MainGameLoop {
             entities.add(new Entity(staticModelBox, new Vector3f(x, y, z), 0, 0, 0, 2));
         }
 
-        MasterRenderer renderer = new MasterRenderer();
+        MasterRenderer renderer = new MasterRenderer(loader);
 
         //Game logic, render...
         while (!Display.isCloseRequested()) {
@@ -166,7 +168,9 @@ public class MainGameLoop {
             player.move(terrain);
             renderer.processEntity(player);
             renderer.processTerrain(terrain);
-            //renderer.processTerrain(terrain2);
+            renderer.processTerrain(terrain2);
+            renderer.processTerrain(terrain3);
+            renderer.processTerrain(terrain4);
             for (Entity e : entities) renderer.processEntity(e);
             renderer.render(lights, camera);
             guiRenderer.render(guis);
