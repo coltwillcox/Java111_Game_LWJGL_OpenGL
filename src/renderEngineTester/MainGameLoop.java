@@ -20,6 +20,8 @@ import terrains.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
+import toolbox.MousePicker;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -44,17 +46,14 @@ public class MainGameLoop {
         guis.add(armor);
         GuiRenderer guiRenderer = new GuiRenderer(loader);
 
-        //Terrains.
+        //Terrain.
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("textureTerrainGrass"));
         TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("textureTerrainMud"));
         TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("textureTerrainGrassFlowers"));
         TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("textureTerrainPath"));
         TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("mapBlend"));
-        Terrain terrain = new Terrain(-1, -1, loader, texturePack, blendMap, "mapHeight");
-        Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap, "mapHeight");
-        Terrain terrain3 = new Terrain(-1, 0, loader, texturePack, blendMap, "mapHeight");
-        Terrain terrain4 = new Terrain(0, 0, loader, texturePack, blendMap, "mapHeight");
+        Terrain terrain = new Terrain(0, 0, loader, texturePack, blendMap, "mapHeight");
 
         List<Entity> entities = new ArrayList<>(); //List to keep all entities. Manual and random created ones.
 
@@ -65,7 +64,7 @@ public class MainGameLoop {
         ModelTexture textureCharizard = staticModelCharizard.getTexture();
         textureCharizard.setShineDamper(100);
         textureCharizard.setReflectivity(100);
-        Entity entityCharizard = new Entity(staticModelCharizard, new Vector3f(-50, -2, -50), 0, 0, 0, 0.5f);
+        Entity entityCharizard = new Entity(staticModelCharizard, new Vector3f(50, terrain.getHeightOfTerrain(50, 50), 50), 0, 0, 0, 0.5f);
         entities.add(entityCharizard);
 
         //Low poly apple tree.
@@ -110,7 +109,7 @@ public class MainGameLoop {
         TexturedModel staticModelLamp = new TexturedModel(modelLamp, new ModelTexture(loader.loadTexture("textureLamp")));
         ModelTexture textureLamp = staticModelLamp.getTexture();
         textureLamp.setUseFakeLighting(true);
-        entities.add(new Entity(staticModelLamp, new Vector3f(-80, terrain.getHeightOfTerrain(-80, -80), -80), 0, 0, 0, 1));
+        entities.add(new Entity(staticModelLamp, new Vector3f(400, terrain.getHeightOfTerrain(400, 400), 400), 0, 0, 0, 1));
 
         //Player
         ModelData dataPlayer = OBJFileLoader.loadOBJ("modelPlayer");
@@ -119,12 +118,12 @@ public class MainGameLoop {
         ModelTexture texturePlayer = staticModelPlayer.getTexture();
         texturePlayer.setShineDamper(100);
         texturePlayer.setReflectivity(100);
-        Player player = new Player(staticModelPlayer, new Vector3f(-30, 0, -30), 0, 225, 0, 0.5f);
+        Player player = new Player(staticModelPlayer, new Vector3f(10, 10, 10), 0, 45, 0, 0.5f);
 
         //Lights! Camera!
         List<Light> lights = new ArrayList<>();
         lights.add(new Light(new Vector3f(1000, 1000, 7000), new Vector3f(0.4f, 0.8f, 1.0f))); //Sun. :)
-        lights.add(new Light(new Vector3f(-80, terrain.getHeightOfTerrain(-80, -80) + 14, -80), new Vector3f(2f, 2f, 0.1f), new Vector3f(1, 0.01f, 0.002f))); //Lamp light.
+        lights.add(new Light(new Vector3f(400, terrain.getHeightOfTerrain(400, 400) + 14, 400), new Vector3f(2f, 2f, 0.1f), new Vector3f(1, 0.01f, 0.002f))); //Lamp light.
         Camera camera = new Camera(player);
 
         //Random entities.
@@ -132,46 +131,49 @@ public class MainGameLoop {
         float x;
         float y;
         float z;
-        for (int i = 0; i < 200; i++) {
-            x = random.nextFloat() * 800 - 400;
-            z = random.nextFloat() * -600;
+        for (int i = 0; i < 100; i++) {
+            x = random.nextFloat() * 800;
+            z = random.nextFloat() * 800;
             y = terrain.getHeightOfTerrain(x, z);
             entities.add(new Entity(staticModelGrass, new Vector3f(x, y, z), 0, 0, 0, 1));
 
-            x = random.nextFloat() * 800 - 400;
-            z = random.nextFloat() * -600;
+            x = random.nextFloat() * 800;
+            z = random.nextFloat() * 800;
             y = terrain.getHeightOfTerrain(x, z);
             entities.add(new Entity(staticModelFern, random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 1));
 
-            x = random.nextFloat() * 800 - 400;
-            z = random.nextFloat() * -600;
+            x = random.nextFloat() * 800;
+            z = random.nextFloat() * 800;
             y = terrain.getHeightOfTerrain(x, z);
             entities.add(new Entity(staticModelTree, random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 1.5f));
 
-            x = random.nextFloat() * 800 - 400;
-            z = random.nextFloat() * -600;
+            x = random.nextFloat() * 800;
+            z = random.nextFloat() * 800;
             y = terrain.getHeightOfTerrain(x, z);
             entities.add(new Entity(staticModelLowPolyTree, random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 1));
 
-            x = random.nextFloat() * 800 - 400;
-            z = random.nextFloat() * -600;
+            x = random.nextFloat() * 800;
+            z = random.nextFloat() * 600;
             y = terrain.getHeightOfTerrain(x, z) + 2;
             entities.add(new Entity(staticModelBox, new Vector3f(x, y, z), 0, 0, 0, 2));
         }
 
         MasterRenderer renderer = new MasterRenderer(loader);
+        MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
 
         //Game logic, render...
         while (!Display.isCloseRequested()) {
             entityCharizard.increaseRotation(0, 0.1f, 0);
             camera.move();
+            picker.update();
+            Vector3f terrainPoint = picker.getCurrentTerrainPoint();
+            if (terrainPoint != null)
+                entityCharizard.setPosition(terrainPoint);
             player.move(terrain);
             renderer.processEntity(player);
             renderer.processTerrain(terrain);
-            renderer.processTerrain(terrain2);
-            renderer.processTerrain(terrain3);
-            renderer.processTerrain(terrain4);
-            for (Entity e : entities) renderer.processEntity(e);
+            for (Entity e : entities)
+                renderer.processEntity(e);
             renderer.render(lights, camera);
             guiRenderer.render(guis);
             DisplayManager.updateDisplay();
