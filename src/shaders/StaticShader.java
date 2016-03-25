@@ -5,6 +5,7 @@ import entities.Light;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 import toolbox.Maths;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class StaticShader extends ShaderProgram {
     private int locationSkyColor;
     private int locationNumberOfRows;
     private int locationOffset;
+    private int locationPlane;
 
     //Constructor.
     public StaticShader() {
@@ -55,6 +57,7 @@ public class StaticShader extends ShaderProgram {
         locationSkyColor = super.getUniformLocation("skyColor");
         locationNumberOfRows = super.getUniformLocation("numberOfRows");
         locationOffset = super.getUniformLocation("offset");
+        locationPlane = super.getUniformLocation("plane");
 
         locationLightPosition = new int[MAX_LIGHTS];
         locationLightColor = new int[MAX_LIGHTS];
@@ -113,6 +116,10 @@ public class StaticShader extends ShaderProgram {
 
     public void loadOffset(float x, float y) {
         super.load2DVector(locationOffset, new Vector2f(x, y));
+    }
+
+    public void loadPlane(Vector4f plane) {
+        super.loadVector(locationPlane, plane);
     }
 
 }

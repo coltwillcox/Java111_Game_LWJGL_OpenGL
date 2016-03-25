@@ -7,11 +7,11 @@ import models.TexturedModel;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector4f;
 import shaders.StaticShader;
 import shaders.TerrainShader;
 import skybox.SkyboxRenderer;
 import terrains.Terrain;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,15 +56,17 @@ public class MasterRenderer {
         GL11.glDisable(GL11.GL_CULL_FACE);
     }
 
-    public void render(List<Light> lights, Camera camera) {
+    public void render(List<Light> lights, Camera camera, Vector4f plane) {
         prepare();
         shader.start();
+        shader.loadPlane(plane);
         shader.loadSkyColor(RED, GREEN, BLUE);
         shader.loadLights(lights);
         shader.loadViewMatrix(camera);
         renderer.render(entities);
         shader.stop();
         terrainShader.start();
+        terrainShader.loadPlane(plane);
         terrainShader.loadSkyColor(RED, GREEN, BLUE);
         terrainShader.loadLights(lights);
         terrainShader.loadViewMatrix(camera);
@@ -75,12 +77,12 @@ public class MasterRenderer {
         entities.clear();
     }
 
-    public void renderScene(List<Entity> entities, List<Terrain> terrains, List<Light> lights, Camera camera) {
+    public void renderScene(List<Entity> entities, List<Terrain> terrains, List<Light> lights, Camera camera, Vector4f plane) {
         for (Terrain terrain: terrains)
             processTerrain(terrain);
         for (Entity entity:entities)
             processEntity(entity);
-        render(lights, camera);
+        render(lights, camera, plane);
     }
 
     //Called once every frame.

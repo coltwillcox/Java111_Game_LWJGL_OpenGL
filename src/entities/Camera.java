@@ -73,6 +73,11 @@ public class Camera {
         position.setY(player.getPosition().getY() + verticalDistance);
     }
 
+    public void invertPitch() {
+        this.pitch = -pitch;
+    }
+
+    //Getters.
     public Vector3f getPosition() {
         return position;
     }
