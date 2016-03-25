@@ -112,13 +112,13 @@ public class MainGameLoop {
         TexturedModel staticModelLamp = new TexturedModel(modelLamp, new ModelTexture(loader.loadTexture("textureLamp")));
         ModelTexture textureLamp = staticModelLamp.getTexture();
         textureLamp.setUseFakeLighting(true);
-        entities.add(new Entity(staticModelLamp, new Vector3f(400, terrain.getHeightOfTerrain(400, 400), 400), 0, 0, 0, 1));
+        entities.add(new Entity(staticModelLamp, new Vector3f(455, terrain.getHeightOfTerrain(455, 400), 400), 0, 0, 0, 1));
         //Random entities locations.
         Random random = new Random();
         float x;
         float y;
         float z;
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 200; i++) {
             x = random.nextFloat() * 800;
             z = random.nextFloat() * 800;
             y = terrain.getHeightOfTerrain(x, z);
@@ -134,10 +134,6 @@ public class MainGameLoop {
             y = terrain.getHeightOfTerrain(x, z);
             entities.add(new Entity(staticModelTree, random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 1.5f));
 
-            x = random.nextFloat() * 800;
-            z = random.nextFloat() * 800;
-            y = terrain.getHeightOfTerrain(x, z);
-            entities.add(new Entity(staticModelLowPolyTree, random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 1));
 
             x = random.nextFloat() * 800;
             z = random.nextFloat() * 600;
@@ -152,12 +148,12 @@ public class MainGameLoop {
         ModelTexture texturePlayer = staticModelPlayer.getTexture();
         texturePlayer.setShineDamper(100);
         texturePlayer.setReflectivity(100);
-        Player player = new Player(staticModelPlayer, new Vector3f(700, 0, 700), 0, 225, 0, 0.5f);
+        Player player = new Player(staticModelPlayer, new Vector3f(450, 0, 450), 0, 225, 0, 0.5f);
 
         //Lights! Camera!
         List<Light> lights = new ArrayList<>();
-        lights.add(new Light(new Vector3f(1000, 1000, 7000), new Vector3f(0.4f, 0.8f, 1.0f))); //Sun. :)
-        lights.add(new Light(new Vector3f(400, terrain.getHeightOfTerrain(400, 400) + 14, 400), new Vector3f(2f, 2f, 0.1f), new Vector3f(1, 0.01f, 0.002f))); //Lamp light.
+        lights.add(new Light(new Vector3f(1000, 1000, 7000), new Vector3f(0.8f, 0.8f, 1.0f))); //Sun. :)
+        lights.add(new Light(new Vector3f(455, terrain.getHeightOfTerrain(470, 400) + 14, 400), new Vector3f(2f, 2f, 0.1f), new Vector3f(1, 0.01f, 0.002f))); //Lamp light.
         Camera camera = new Camera(player);
 
         MasterRenderer renderer = new MasterRenderer(loader);
@@ -168,7 +164,7 @@ public class MainGameLoop {
         WaterShader waterShader = new WaterShader();
         WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), fbos);
         List<WaterTile> waterTiles = new ArrayList<>();
-        WaterTile water = new WaterTile(700, 700, 0); //x, z, height (or y).
+        WaterTile water = new WaterTile(400, 400, -15); //x, z, height (or y).
         waterTiles.add(water);
 
 
