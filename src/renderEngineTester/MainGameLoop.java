@@ -10,6 +10,7 @@ import models.RawModel;
 import models.TexturedModel;
 import objConverter.ModelData;
 import objConverter.OBJFileLoader;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -21,6 +22,7 @@ import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
 import toolbox.MousePicker;
+import water.WaterFrameBuffers;
 import water.WaterRenderer;
 import water.WaterShader;
 import water.WaterTile;
@@ -164,28 +166,37 @@ public class MainGameLoop {
         WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix());
         List<WaterTile> waterTiles = new ArrayList<>();
         waterTiles.add(new WaterTile(700, 700, 0)); //x, z, height (or y).
+        WaterFrameBuffers fbos = new WaterFrameBuffers();
+        GuiTexture gui = new GuiTexture(fbos.getReflectionTexture(), new Vector2f(-0.5f, 0.5f), new Vector2f(0.5f, 0.5f));
+        guis.add(gui);
 
         //Game logic, rendering...
         while (!Display.isCloseRequested()) {
             player.move(terrain);
             camera.move();
             picker.update();
+
+            //Render scene into FrameBuffer.
+            fbos.bindReflectionFrameBuffer();
+            renderer.renderScene(entities, terrains, lights, camera);
+            fbos.unbindCurrentFrameBuffer();
+
             renderer.renderScene(entities, terrains, lights, camera);
             renderer.processEntity(player);
 
             //Dragging Charizard.
             entityCharizard.increaseRotation(0, 0.1f, 0);
             Vector3f terrainPoint = picker.getCurrentTerrainPoint();
-            if (terrainPoint != null)
+            if (terrainPoint != null && Mouse.isButtonDown(0))
                 entityCharizard.setPosition(terrainPoint);
 
             waterRenderer.render(waterTiles, camera);
-
             guiRenderer.render(guis);
             DisplayManager.updateDisplay();
         }
 
         //Clear memory and close program.
+        fbos.cleanUp();
         waterShader.cleanUp();
         guiRenderer.cleanUp();
         renderer.cleanUp();
