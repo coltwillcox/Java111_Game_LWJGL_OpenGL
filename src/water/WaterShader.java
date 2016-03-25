@@ -16,6 +16,7 @@ public class WaterShader extends ShaderProgram {
     private int locationRefractionTexture;
     private int locationDudvMap;
     private int locationMoveFactor;
+    private int locationCameraPosition;
 
 	//Constructor.
 	public WaterShader() {
@@ -36,6 +37,7 @@ public class WaterShader extends ShaderProgram {
         locationRefractionTexture = getUniformLocation("refractionTexture");
         locationDudvMap = getUniformLocation("dudvMap");
         locationMoveFactor = getUniformLocation("moveFactor");
+        locationCameraPosition = getUniformLocation("cameraPosition");
 	}
 
 	public void loadProjectionMatrix(Matrix4f projection) {
@@ -45,6 +47,7 @@ public class WaterShader extends ShaderProgram {
 	public void loadViewMatrix(Camera camera) {
 		Matrix4f viewMatrix = Maths.createViewMatrix(camera);
 		loadMatrix(locationViewMatrix, viewMatrix);
+        super.loadVector(locationCameraPosition, camera.getPosition());
 	}
 
 	public void loadModelMatrix(Matrix4f modelMatrix) {
