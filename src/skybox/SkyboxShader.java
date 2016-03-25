@@ -29,6 +29,21 @@ public class SkyboxShader extends ShaderProgram {
         super(VERTEX_FILE, FRAGMENT_FILE);
     }
 
+    @Override
+    protected void getAllUniformLocations() {
+        locationProjectionMatrix = super.getUniformLocation("projectionMatrix");
+        locationViewMatrix = super.getUniformLocation("viewMatrix");
+        locationFogColor = super.getUniformLocation("fogColor");
+        locationCubeMap = super.getUniformLocation("cubeMap");
+        locationCubeMap2 = super.getUniformLocation("cubeMap2");
+        locationBlendFactor = super.getUniformLocation("blendFactor");
+    }
+
+    @Override
+    protected void bindAttributes() {
+        super.bindAttribute(0, "position");
+    }
+
     public void loadProjectionMatrix(Matrix4f matrix){
         super.loadMatrix(locationProjectionMatrix, matrix);
     }
@@ -54,21 +69,6 @@ public class SkyboxShader extends ShaderProgram {
 
     public void loadBlendFactor(float blend) {
         super.loadFloat(locationBlendFactor, blend);
-    }
-
-    @Override
-    protected void getAllUniformLocations() {
-        locationProjectionMatrix = super.getUniformLocation("projectionMatrix");
-        locationViewMatrix = super.getUniformLocation("viewMatrix");
-        locationFogColor = super.getUniformLocation("fogColor");
-        locationCubeMap = super.getUniformLocation("cubeMap");
-        locationCubeMap2 = super.getUniformLocation("cubeMap2");
-        locationBlendFactor = super.getUniformLocation("blendFactor");
-    }
-
-    @Override
-    protected void bindAttributes() {
-        super.bindAttribute(0, "position");
     }
 
 }

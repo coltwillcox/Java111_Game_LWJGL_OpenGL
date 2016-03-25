@@ -7,11 +7,13 @@ import entities.Camera;
 
 public class WaterShader extends ShaderProgram {
 
-	private final static String VERTEX_FILE = "src/water/waterVertex.txt";
-	private final static String FRAGMENT_FILE = "src/water/waterFragment.txt";
-	private int locationModelMatrix;
+	private final static String VERTEX_FILE = "src/water/waterVertexShader.txt";
+	private final static String FRAGMENT_FILE = "src/water/waterFragmentShader.txt";
+    private int locationProjectionMatrix;
+    private int locationModelMatrix;
 	private int locationViewMatrix;
-	private int locationProjectionMatrix;
+	private int locationReflectionTexture;
+    private int locationRefractionTexture;
 
 	//Constructor.
 	public WaterShader() {
@@ -28,6 +30,8 @@ public class WaterShader extends ShaderProgram {
 		locationProjectionMatrix = getUniformLocation("projectionMatrix");
 		locationViewMatrix = getUniformLocation("viewMatrix");
 		locationModelMatrix = getUniformLocation("modelMatrix");
+        locationReflectionTexture = getUniformLocation("reflectionTexture");
+        locationRefractionTexture = getUniformLocation("refractionTexture");
 	}
 
 	public void loadProjectionMatrix(Matrix4f projection) {
@@ -42,5 +46,11 @@ public class WaterShader extends ShaderProgram {
 	public void loadModelMatrix(Matrix4f modelMatrix) {
 		loadMatrix(locationModelMatrix, modelMatrix);
 	}
+
+    public void connectTextureUnits() {
+        super.loadInt(locationReflectionTexture, 0);
+        super.loadInt(locationRefractionTexture, 1);
+
+    }
 
 }
