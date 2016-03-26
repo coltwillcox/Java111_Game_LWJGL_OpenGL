@@ -202,7 +202,7 @@ public class MainGameLoop {
                 entityCharizard.setPosition(terrainPoint);
 
             //Render water.
-            waterRenderer.render(waterTiles, camera);
+            waterRenderer.render(waterTiles, camera, lights.get(0)); //0 is Sun.
 
             //Render GUI.
             guiRenderer.render(guis);

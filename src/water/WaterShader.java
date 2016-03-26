@@ -1,5 +1,6 @@
 package water;
 
+import entities.Light;
 import org.lwjgl.util.vector.Matrix4f;
 import shaders.ShaderProgram;
 import toolbox.Maths;
@@ -14,9 +15,13 @@ public class WaterShader extends ShaderProgram {
 	private int locationViewMatrix;
 	private int locationReflectionTexture;
     private int locationRefractionTexture;
-    private int locationDudvMap;
+    private int locationMapDUDV;
     private int locationMoveFactor;
     private int locationCameraPosition;
+	private int locationMapNormal;
+    private int locationLightColor;
+    private int locationLightPosition;
+
 
 	//Constructor.
 	public WaterShader() {
@@ -35,9 +40,12 @@ public class WaterShader extends ShaderProgram {
 		locationModelMatrix = getUniformLocation("modelMatrix");
         locationReflectionTexture = getUniformLocation("reflectionTexture");
         locationRefractionTexture = getUniformLocation("refractionTexture");
-        locationDudvMap = getUniformLocation("dudvMap");
+        locationMapDUDV = getUniformLocation("mapDUDV");
         locationMoveFactor = getUniformLocation("moveFactor");
         locationCameraPosition = getUniformLocation("cameraPosition");
+        locationMapNormal = getUniformLocation("mapNormal");
+        locationLightColor = getUniformLocation("lightColor");
+        locationLightPosition = getUniformLocation("lightPosition");
 	}
 
 	public void loadProjectionMatrix(Matrix4f projection) {
@@ -54,14 +62,20 @@ public class WaterShader extends ShaderProgram {
 		loadMatrix(locationModelMatrix, modelMatrix);
 	}
 
+    public void loadMoveFactor(float moveFactor) {
+        super.loadFloat(locationMoveFactor, moveFactor);
+    }
+
+    public void loadLight(Light sun) {
+        super.loadVector(locationLightColor, sun.getColor());
+        super.loadVector(locationLightPosition, sun.getPosition());
+    }
+
     public void connectTextureUnits() {
         super.loadInt(locationReflectionTexture, 0);
         super.loadInt(locationRefractionTexture, 1);
-        super.loadInt(locationDudvMap, 2);
-    }
-
-    public void loadMoveFactor(float moveFactor) {
-        super.loadFloat(locationMoveFactor, moveFactor);
+        super.loadInt(locationMapDUDV, 2);
+        super.loadInt(locationMapNormal, 3);
     }
 
 }
