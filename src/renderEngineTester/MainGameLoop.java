@@ -75,12 +75,6 @@ public class MainGameLoop {
         textureCharizard.setReflectivity(100);
         Entity entityCharizard = new Entity(staticModelCharizard, new Vector3f(50, terrain.getHeightOfTerrain(50, 50), 50), 0, 0, 0, 0.5f);
         entities.add(entityCharizard);
-        //Low poly apple tree.
-        ModelData dataLowPolyTree = OBJFileLoader.loadOBJ("modelLowPolyTree");
-        RawModel modelLowPolyTree = loader.loadToVAO(dataLowPolyTree.getVertices(), dataLowPolyTree.getTextureCoords(), dataLowPolyTree.getNormals(), dataLowPolyTree.getIndices());
-        TexturedModel staticModelLowPolyTree = new TexturedModel(modelLowPolyTree, new ModelTexture(loader.loadTexture("textureAtlasLowPolyTree")));
-        ModelTexture textureLowPolyTree = staticModelLowPolyTree.getTexture();
-        textureLowPolyTree.setNumberOfRows(2);
         //Pine tree.
         ModelData dataTree = OBJFileLoader.loadOBJ("modelTree");
         RawModel modelTree = loader.loadToVAO(dataTree.getVertices(), dataTree.getTextureCoords(), dataTree.getNormals(), dataTree.getIndices());
@@ -134,7 +128,6 @@ public class MainGameLoop {
             y = terrain.getHeightOfTerrain(x, z);
             entities.add(new Entity(staticModelTree, random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 1.5f));
 
-
             x = random.nextFloat() * 800;
             z = random.nextFloat() * 600;
             y = terrain.getHeightOfTerrain(x, z) + 2;
@@ -181,7 +174,7 @@ public class MainGameLoop {
             float distance = 2 * (camera.getPosition().getY() - water.getHeight());
             camera.getPosition().setY(camera.getPosition().getY() - distance);
             camera.invertPitch();
-            renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0, 1, 0, -water.getHeight() )); //Clip plane with height.
+            renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0, 1, 0, -water.getHeight() + 1f )); //Clip plane with height.
             camera.getPosition().setY(camera.getPosition().getY() + distance);
             camera.invertPitch();
 

@@ -16,7 +16,7 @@ public class DisplayManager {
 
     private static final int WIDTH = 1280;
     private static final int HEIGHT = 800;
-    private static final int FPS_CAP = 120;
+    private static final int FPS_CAP = 60;
     private static long lastFrameTime;
     private static float delta;
 

@@ -95,7 +95,7 @@ public class SkyboxRenderer {
 
     //Day and night cycle.
     private void bindTextures() {
-        time += DisplayManager.getFrameTimeSeconds() * 1000; //Lower * to get longer days and nights.
+        time += DisplayManager.getFrameTimeSeconds() * 100; //Lower * to get longer days and nights.
         time %= 24000;
         int texture1;
         int texture2;

@@ -21,6 +21,7 @@ public class WaterShader extends ShaderProgram {
 	private int locationMapNormal;
     private int locationLightColor;
     private int locationLightPosition;
+    private int locationMapDepth;
 
 
 	//Constructor.
@@ -46,6 +47,7 @@ public class WaterShader extends ShaderProgram {
         locationMapNormal = getUniformLocation("mapNormal");
         locationLightColor = getUniformLocation("lightColor");
         locationLightPosition = getUniformLocation("lightPosition");
+        locationMapDepth = getUniformLocation("mapDepth");
 	}
 
 	public void loadProjectionMatrix(Matrix4f projection) {
@@ -76,6 +78,7 @@ public class WaterShader extends ShaderProgram {
         super.loadInt(locationRefractionTexture, 1);
         super.loadInt(locationMapDUDV, 2);
         super.loadInt(locationMapNormal, 3);
+        super.loadInt(locationMapDepth, 4);
     }
 
 }
