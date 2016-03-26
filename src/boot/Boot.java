@@ -1,4 +1,4 @@
-package renderEngineTester;
+package boot;
 
 import entities.Camera;
 import entities.Entity;
@@ -37,7 +37,7 @@ import java.util.Random;
  * Created by colt on 3/17/16.
  */
 
-public class MainGameLoop {
+public class Boot {
 
     public static void main(String[] args) {
         DisplayManager.createDisplay();
@@ -100,6 +100,11 @@ public class MainGameLoop {
         RawModel modelBox = loader.loadToVAO(dataBox.getVertices(), dataBox.getTextureCoords(), dataBox.getNormals(), dataBox.getIndices());
         TexturedModel staticModelBox = new TexturedModel(modelBox, new ModelTexture(loader.loadTexture("textureBox")));
         ModelTexture textureBox = staticModelBox.getTexture();
+        //Rocks.
+        ModelData dataRocks = OBJFileLoader.loadOBJ("modelRocks");
+        RawModel modelRocks = loader.loadToVAO(dataRocks.getVertices(), dataRocks.getTextureCoords(), dataRocks.getNormals(), dataRocks.getIndices());
+        TexturedModel staticModelRocks = new TexturedModel(modelRocks, new ModelTexture(loader.loadTexture("textureRocks")));
+        ModelTexture textureRocks = staticModelBox.getTexture();
         //Lamp.
         ModelData dataLamp = OBJFileLoader.loadOBJ("modelLamp");
         RawModel modelLamp = loader.loadToVAO(dataLamp.getVertices(), dataLamp.getTextureCoords(), dataLamp.getNormals(), dataLamp.getIndices());
@@ -112,7 +117,13 @@ public class MainGameLoop {
         float x;
         float y;
         float z;
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 400; i++) {
+            x = random.nextFloat() * 800;
+            z = random.nextFloat() * 800;
+            y = terrain.getHeightOfTerrain(x, z);
+            entities.add(new Entity(staticModelTree, random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 1.5f));
+        }
+        for (int i = 0; i < 100; i++) {
             x = random.nextFloat() * 800;
             z = random.nextFloat() * 800;
             y = terrain.getHeightOfTerrain(x, z);
@@ -124,14 +135,14 @@ public class MainGameLoop {
             entities.add(new Entity(staticModelFern, random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 1));
 
             x = random.nextFloat() * 800;
-            z = random.nextFloat() * 800;
-            y = terrain.getHeightOfTerrain(x, z);
-            entities.add(new Entity(staticModelTree, random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 1.5f));
-
-            x = random.nextFloat() * 800;
             z = random.nextFloat() * 600;
             y = terrain.getHeightOfTerrain(x, z) + 2;
             entities.add(new Entity(staticModelBox, new Vector3f(x, y, z), 0, 0, 0, 2));
+
+            x = random.nextFloat() * 800;
+            z = random.nextFloat() * 600;
+            y = terrain.getHeightOfTerrain(x, z) - 1;
+            entities.add(new Entity(staticModelRocks, new Vector3f(x, y, z), 0, 0, 0, 2));
         }
 
         //Player

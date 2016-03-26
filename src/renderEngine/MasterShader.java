@@ -1,4 +1,4 @@
-package shaders;
+package renderEngine;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -17,7 +17,7 @@ import java.nio.FloatBuffer;
  * Created by colt on 3/18/16.
  */
 
-public abstract class ShaderProgram {
+public abstract class MasterShader {
 
     private int programID;
     private int vertexShaderID;
@@ -25,7 +25,7 @@ public abstract class ShaderProgram {
     private static FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
     //Constructor.
-    public ShaderProgram(String vertexFile, String fragmentFile) {
+    public MasterShader(String vertexFile, String fragmentFile) {
         vertexShaderID = loadShader(vertexFile, GL20.GL_VERTEX_SHADER);
         fragmentShaderID = loadShader(fragmentFile, GL20.GL_FRAGMENT_SHADER);
         programID = GL20.glCreateProgram();

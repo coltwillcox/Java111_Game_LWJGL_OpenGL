@@ -2,14 +2,16 @@ package renderEngine;
 
 import entities.Camera;
 import entities.Entity;
+import entities.EntityRenderer;
 import entities.Light;
 import models.TexturedModel;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector4f;
-import shaders.StaticShader;
-import shaders.TerrainShader;
+import entities.EntityShader;
+import terrains.TerrainRenderer;
+import terrains.TerrainShader;
 import skybox.SkyboxRenderer;
 import terrains.Terrain;
 import java.util.ArrayList;
@@ -30,7 +32,7 @@ public class MasterRenderer {
     private static final float GREEN = (float) 160/255;
     private static final float BLUE = (float) 160/255;
     private Matrix4f projectionMatrix;
-    private StaticShader shader = new StaticShader();
+    private EntityShader shader = new EntityShader();
     private EntityRenderer renderer;
     private TerrainRenderer terrainRenderer;
     private TerrainShader terrainShader = new TerrainShader();

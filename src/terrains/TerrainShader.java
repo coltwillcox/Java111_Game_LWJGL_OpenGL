@@ -1,24 +1,24 @@
-package shaders;
+package terrains;
 
 import entities.Camera;
 import entities.Light;
 import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
+import renderEngine.MasterShader;
 import toolbox.Maths;
 
 import java.util.List;
 
 /**
- * Created by colt on 3/18/16.
+ * Created by colt on 3/20/16.
  */
 
-public class StaticShader extends ShaderProgram {
+public class TerrainShader extends MasterShader {
 
     private static final int MAX_LIGHTS = 2;
-    private static final String VERTEX_FILE = "src/shaders/vertexShader.txt";
-    private static final String FRAGMENT_FILE = "src/shaders/fragmentShader.txt";
+    private static final String VERTEX_FILE = "src/terrains/terrainVertexShader.txt";
+    private static final String FRAGMENT_FILE = "src/terrains/terrainFragmentShader.txt";
     private int locationTransformationMatrix;
     private int locationProjectionMatrix;
     private int locationViewMatrix;
@@ -27,20 +27,22 @@ public class StaticShader extends ShaderProgram {
     private int locationAttenuation[];
     private int locationShineDamper;
     private int locationReflectivity;
-    private int locationUseFakeLighting;
     private int locationSkyColor;
-    private int locationNumberOfRows;
-    private int locationOffset;
+    private int locationBackgroundTexture;
+    private int locationrTexture;
+    private int locationgTexture;
+    private int locationbTexture;
+    private int locationBlendMap;
     private int locationPlane;
 
     //Constructor.
-    public StaticShader() {
+    public TerrainShader() {
         super(VERTEX_FILE, FRAGMENT_FILE);
     }
 
     @Override
     protected void bindAttributes() {
-        //Bind with vertexShader.txt.
+        //Bind with entityVertexShader.txt.
         super.bindAttribute(0, "position");
         super.bindAttribute(1, "textureCoords");
         super.bindAttribute(2, "normal");
@@ -53,10 +55,12 @@ public class StaticShader extends ShaderProgram {
         locationViewMatrix = super.getUniformLocation("viewMatrix");
         locationShineDamper = super.getUniformLocation("shineDamper");
         locationReflectivity = super.getUniformLocation("reflectivity");
-        locationUseFakeLighting = super.getUniformLocation("useFakeLighting");
         locationSkyColor = super.getUniformLocation("skyColor");
-        locationNumberOfRows = super.getUniformLocation("numberOfRows");
-        locationOffset = super.getUniformLocation("offset");
+        locationBackgroundTexture = super.getUniformLocation("backgroundTexture");
+        locationrTexture = super.getUniformLocation("rTexture");
+        locationgTexture = super.getUniformLocation("gTexture");
+        locationbTexture = super.getUniformLocation("bTexture");
+        locationBlendMap = super.getUniformLocation("blendMap");
         locationPlane = super.getUniformLocation("plane");
 
         locationLightPosition = new int[MAX_LIGHTS];
@@ -102,20 +106,16 @@ public class StaticShader extends ShaderProgram {
         super.loadFloat(locationReflectivity, reflectivity);
     }
 
-    public void loadUseFakeLighting(boolean useFake) {
-        super.loadBoolean(locationUseFakeLighting, useFake);
-    }
-
     public void loadSkyColor(float r, float g, float b) {
         super.loadVector(locationSkyColor, new Vector3f(r, g, b));
     }
 
-    public void loadNumberOfRows(int numberOfRows) {
-        super.loadFloat(locationNumberOfRows, numberOfRows);
-    }
-
-    public void loadOffset(float x, float y) {
-        super.load2DVector(locationOffset, new Vector2f(x, y));
+    public void connectTextureUnits() {
+        super.loadInt(locationBackgroundTexture, 0);
+        super.loadInt(locationrTexture, 1);
+        super.loadInt(locationgTexture, 2);
+        super.loadInt(locationbTexture, 3);
+        super.loadInt(locationBlendMap, 4);
     }
 
     public void loadPlane(Vector4f plane) {

@@ -2,11 +2,11 @@ package water;
 
 import entities.Light;
 import org.lwjgl.util.vector.Matrix4f;
-import shaders.ShaderProgram;
+import renderEngine.MasterShader;
 import toolbox.Maths;
 import entities.Camera;
 
-public class WaterShader extends ShaderProgram {
+public class WaterShader extends MasterShader {
 
 	private final static String VERTEX_FILE = "src/water/waterVertexShader.txt";
 	private final static String FRAGMENT_FILE = "src/water/waterFragmentShader.txt";

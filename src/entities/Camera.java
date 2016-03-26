@@ -1,5 +1,6 @@
 package entities;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -26,9 +27,29 @@ public class Camera {
     }
 
     public void move() {
+        if(Mouse.isButtonDown(1)) {
+            //Grab mouse cursor so it is not shown on the screen.
+            if(!Mouse.isGrabbed())
+                Mouse.setGrabbed(true);
+            calculateAngleAroundPlayer();
+            calculatePitch();
+            if(Keyboard.isKeyDown(Keyboard.KEY_W) || Keyboard.isKeyDown(Keyboard.KEY_S)) {
+                player.increaseRotation(0, angleAroundPlayer, 0);
+                angleAroundPlayer = 0;
+            }
+        } else if(!Mouse.isButtonDown(1)) {
+            //Camera returns smoothly behind the player when you move w/o holding the mouse button.
+            if(Keyboard.isKeyDown(Keyboard.KEY_W) || Keyboard.isKeyDown(Keyboard.KEY_S)) {
+                angleAroundPlayer /= 1.2f;
+                if(angleAroundPlayer >= -0.5f && angleAroundPlayer <= 0.5f)
+                    angleAroundPlayer = 0;
+            }
+        }
+        //Show mouse cursor again.
+        if(!Mouse.isButtonDown(1) && Mouse.isGrabbed())
+            Mouse.setGrabbed(false);
+
         calculateZoom();
-        calculatePitch();
-        calculateAngleAroundPlayer();
         horizontalDistance = calculateHorizontalDistance();
         verticalDistance = calculateVerticalDistance();
         calculateCameraPosition();
@@ -37,7 +58,7 @@ public class Camera {
 
     private void calculateZoom() {
         float zoomLevel = Mouse.getDWheel() * 0.05f;
-        if (distanceFromPlayer - zoomLevel > 5f && distanceFromPlayer - zoomLevel < 60f) //Min and max zoom.
+        if (distanceFromPlayer - zoomLevel > -1f && distanceFromPlayer - zoomLevel < 60f) //Min and max zoom. -1 looks like FPS. :)
             distanceFromPlayer -= zoomLevel;
     }
 
@@ -70,7 +91,7 @@ public class Camera {
         float offsetZ = (float) (horizontalDistance * Math.cos(Math.toRadians(theta)));
         position.setX(player.getPosition().getX() - offsetX);
         position.setZ(player.getPosition().getZ() - offsetZ);
-        position.setY(player.getPosition().getY() + verticalDistance);
+        position.setY(player.getPosition().getY() + verticalDistance + Player.AVATAR_HEIGHT); //Add AVATAR_HEIGHT to zoom onto player head, not feet.
     }
 
     public void invertPitch() {

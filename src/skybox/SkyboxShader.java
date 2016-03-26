@@ -4,14 +4,14 @@ import entities.Camera;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import renderEngine.DisplayManager;
-import shaders.ShaderProgram;
+import renderEngine.MasterShader;
 import toolbox.Maths;
 
 /**
  * Created by colt on 3/24/16.
  */
 
-public class SkyboxShader extends ShaderProgram {
+public class SkyboxShader extends MasterShader {
 
     private static final String VERTEX_FILE = "src/skybox/skyboxVertexShader.txt";
     private static final String FRAGMENT_FILE = "src/skybox/skyboxFragmentShader.txt";
