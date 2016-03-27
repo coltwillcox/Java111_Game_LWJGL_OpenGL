@@ -61,6 +61,15 @@ public class Loader {
         return new RawModel(vaoID, indices.length);
     }
 
+    //Overload. User for fonts.
+    public int loadToVAO(float[] positions, float[] textureCoords) {
+        int vaoID = createVAO();
+        storeDataInAttributeList(0, 2, positions); //Store data (positions) in VAO's attributeList 0, with 3D coords.
+        storeDataInAttributeList(1, 2, textureCoords); //2D (texture) coords.
+        unbindVAO(); //Must unbind VAO when finished using it.
+        return vaoID;
+    }
+
     public int loadTexture(String fileName) {
         Texture texture = null;
         try {

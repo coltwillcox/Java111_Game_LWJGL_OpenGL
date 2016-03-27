@@ -4,13 +4,15 @@ import entities.Camera;
 import entities.Entity;
 import entities.Light;
 import entities.Player;
+import fontMeshCreator.FontType;
+import fontMeshCreator.GUIText;
+import fontRendering.TextMaster;
 import guis.GuiRenderer;
 import guis.GuiTexture;
 import models.RawModel;
 import models.TexturedModel;
 import objConverter.ModelData;
 import objConverter.OBJFileLoader;
-import objConverterNormalMapping.ModelDataNM;
 import objConverterNormalMapping.OBJFileLoaderNM;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -31,6 +33,7 @@ import water.WaterFrameBuffers;
 import water.WaterRenderer;
 import water.WaterShader;
 import water.WaterTile;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -44,6 +47,12 @@ public class Boot {
     public static void main(String[] args) {
         DisplayManager.createDisplay();
         Loader loader = new Loader();
+
+        //Text.
+        TextMaster.init(loader);
+        FontType font = new FontType(loader.loadTexture("fontArial"), new File("res/fontArial.fnt"));
+        GUIText text = new GUIText("Text", 1, font, new Vector2f(0, 0.5f), 0.1f, true);
+        text.setColor(0, 1, 0);
 
         //GUI.
         List<GuiTexture> guis = new ArrayList<>(); //List for all GUI objects (images).
@@ -235,10 +244,14 @@ public class Boot {
             //Render GUI.
             guiRenderer.render(guis);
 
+            //Render text.
+            TextMaster.render();
+
             DisplayManager.updateDisplay();
         }
 
         //Clear memory and close program.
+        TextMaster.cleanUp();
         fbos.cleanUp();
         waterShader.cleanUp();
         guiRenderer.cleanUp();
