@@ -17,8 +17,8 @@ import entities.Camera;
 
 public class WaterRenderer {
 
-    public static final String MAP_DUDV = "mapDUDV";
-    public static final String MAP_NORMAL = "mapNormal";
+    public static final String MAP_DUDV = "mapDUDVWater";
+    public static final String MAP_NORMAL = "mapNormalWater";
     public static final float WAVE_SPEED = 0.03f;
     private float moveFactor = 0;
     private int mapDUDV;

@@ -10,6 +10,8 @@ import models.RawModel;
 import models.TexturedModel;
 import objConverter.ModelData;
 import objConverter.OBJFileLoader;
+import objConverterNormalMapping.ModelDataNM;
+import objConverterNormalMapping.OBJFileLoaderNM;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -66,6 +68,7 @@ public class Boot {
 
         //Entities
         List<Entity> entities = new ArrayList<>(); //List to keep all entities. Manual and random created ones.
+        List<Entity> entitiesNormalMap = new ArrayList<>(); //Normal Mapped entities.
         //Charizard.
         ModelData dataCharizard = OBJFileLoader.loadOBJ("modelCharizard");
         RawModel modelCharizard = loader.loadToVAO(dataCharizard.getVertices(), dataCharizard.getTextureCoords(), dataCharizard.getNormals(), dataCharizard.getIndices());
@@ -112,6 +115,16 @@ public class Boot {
         ModelTexture textureLamp = staticModelLamp.getTexture();
         textureLamp.setUseFakeLighting(true);
         entities.add(new Entity(staticModelLamp, new Vector3f(455, terrain.getHeightOfTerrain(455, 400), 400), 0, 0, 0, 1));
+        //Barrel. Normal map.
+        TexturedModel texturedModelBarrel = new TexturedModel(OBJFileLoaderNM.loadOBJ("modelBarrel", loader), new ModelTexture(loader.loadTexture("textureBarrel")));
+        texturedModelBarrel.getTexture().setMapNormal(loader.loadTexture("mapNormalBarrel"));
+        texturedModelBarrel.getTexture().setShineDamper(10);
+        texturedModelBarrel.getTexture().setReflectivity(0.5f);
+        //Boulder. Normal map.
+        TexturedModel texturedModelBoulder = new TexturedModel(OBJFileLoaderNM.loadOBJ("modelBoulder", loader), new ModelTexture(loader.loadTexture("textureBoulder")));
+        texturedModelBoulder.getTexture().setMapNormal(loader.loadTexture("mapNormalBoulder"));
+        texturedModelBoulder.getTexture().setShineDamper(10);
+        texturedModelBoulder.getTexture().setReflectivity(0.5f);
         //Random entities locations.
         Random random = new Random();
         float x;
@@ -123,7 +136,7 @@ public class Boot {
             y = terrain.getHeightOfTerrain(x, z);
             entities.add(new Entity(staticModelTree, random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 1.5f));
         }
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 50; i++) {
             x = random.nextFloat() * 800;
             z = random.nextFloat() * 800;
             y = terrain.getHeightOfTerrain(x, z);
@@ -143,6 +156,16 @@ public class Boot {
             z = random.nextFloat() * 600;
             y = terrain.getHeightOfTerrain(x, z) - 1;
             entities.add(new Entity(staticModelRocks, new Vector3f(x, y, z), 0, 0, 0, 2));
+
+            x = random.nextFloat() * 800;
+            z = random.nextFloat() * 800;
+            y = terrain.getHeightOfTerrain(x, z) + 3;
+            entitiesNormalMap.add(new Entity(texturedModelBarrel, new Vector3f(x, y, z), 0, 0, 0, 0.5f));
+
+            x = random.nextFloat() * 800;
+            z = random.nextFloat() * 800;
+            y = terrain.getHeightOfTerrain(x, z) + 2;
+            entitiesNormalMap.add(new Entity(texturedModelBoulder, new Vector3f(x, y, z), 0, 0, 0, 0.5f));
         }
 
         //Player
@@ -153,6 +176,7 @@ public class Boot {
         texturePlayer.setShineDamper(100);
         texturePlayer.setReflectivity(100);
         Player player = new Player(staticModelPlayer, new Vector3f(450, 0, 450), 0, 225, 0, 0.5f);
+        entities.add(player);
 
         //Lights! Camera!
         List<Light> lights = new ArrayList<>();
@@ -185,19 +209,19 @@ public class Boot {
             float distance = 2 * (camera.getPosition().getY() - water.getHeight());
             camera.getPosition().setY(camera.getPosition().getY() - distance);
             camera.invertPitch();
-            renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0, 1, 0, -water.getHeight() + 1f )); //Clip plane with height.
+            renderer.renderScene(entities, entitiesNormalMap, terrains, lights, camera, new Vector4f(0, 1, 0, -water.getHeight() + 1f )); //Clip plane with height.
             camera.getPosition().setY(camera.getPosition().getY() + distance);
             camera.invertPitch();
 
             //Render refraction texture.
             fbos.bindRefractionFrameBuffer();
-            renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0, -1, 0, water.getHeight()));
+            renderer.renderScene(entities, entitiesNormalMap, terrains, lights, camera, new Vector4f(0, -1, 0, water.getHeight()));
 
             //Render scene and player to screen.
             GL11.glDisable(GL30.GL_CLIP_DISTANCE0); //Disable cliping plane.
             fbos.unbindCurrentFrameBuffer(); //Unbind buffer first.
             renderer.processEntity(player);
-            renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0, -1, 0, 15));
+            renderer.renderScene(entities, entitiesNormalMap, terrains, lights, camera, new Vector4f(0, -1, 0, 15));
 
             //Dragging Charizard.
             entityCharizard.increaseRotation(0, 0.1f, 0);

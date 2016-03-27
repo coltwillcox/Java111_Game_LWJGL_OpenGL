@@ -41,12 +41,24 @@ public class Loader {
         return new RawModel(vaoID, indices.length);
     }
 
-    //Method overload. Used for GUI.
+    //Overload. Used for GUI.
     public RawModel loadToVAO(float[] positions, int dimensions) {
         int vaoID = createVAO();
         this.storeDataInAttributeList(0, dimensions, positions);
         unbindVAO();
         return new RawModel(vaoID, positions.length / dimensions);
+    }
+
+    //Overload. User for normal mapping.
+    public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, float[] tangents, int[] indices) {
+        int vaoID = createVAO();
+        bindIndicesBuffer(indices);
+        storeDataInAttributeList(0, 3, positions); //Store data (positions) in VAO's attributeList 0, with 3D coords.
+        storeDataInAttributeList(1, 2, textureCoords); //2D (texture) coords.
+        storeDataInAttributeList(2, 3, normals); //Normal vectors.
+        storeDataInAttributeList(3, 3, tangents); //Tangents vectors.
+        unbindVAO(); //Must unbind VAO when finished using it.
+        return new RawModel(vaoID, indices.length);
     }
 
     public int loadTexture(String fileName) {

@@ -15,7 +15,7 @@ uniform float shineDamper;
 uniform float reflectivity;
 uniform vec3 skyColor;
 
-const float levels = 3.0;
+//const float levels = 3.0;
 
 void main(void) {
     vec3 unitNormal = normalize(surfaceNormal);

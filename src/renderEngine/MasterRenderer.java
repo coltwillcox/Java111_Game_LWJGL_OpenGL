@@ -4,6 +4,7 @@ import entities.Camera;
 import entities.Entity;
 import entities.EntityRenderer;
 import entities.Light;
+import entitiesNormalMapping.RendererNM;
 import models.TexturedModel;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -28,17 +29,19 @@ public class MasterRenderer {
     private static final float FOV = 75;
     private static final float NEAR_PLANE = 0.1f;
     private static final float FAR_PLANE = 1000;
-    private static final float RED = (float) 120/255; //Fog color. Easy to use with color pickers.
-    private static final float GREEN = (float) 160/255;
-    private static final float BLUE = (float) 160/255;
+    public static final float RED = (float) 0.1f; //Fog color. Can be 100/255, easy to use with color pickers.
+    public static final float GREEN = (float) 0.4f;
+    public static final float BLUE = (float) 0.2f;
     private Matrix4f projectionMatrix;
     private EntityShader shader = new EntityShader();
     private EntityRenderer renderer;
     private TerrainRenderer terrainRenderer;
     private TerrainShader terrainShader = new TerrainShader();
     private Map<TexturedModel, List<Entity>> entities = new HashMap<>();
+    private Map<TexturedModel, List<Entity>> entitiesNormalMap = new HashMap<>();
     private List<Terrain> terrains = new ArrayList<>();
     private SkyboxRenderer skyboxRenderer;
+    private RendererNM rendererNormalMap;
 
     //Constructor.
     public MasterRenderer(Loader loader) {
@@ -47,6 +50,7 @@ public class MasterRenderer {
         renderer = new EntityRenderer(shader, projectionMatrix);
         terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
         skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
+        rendererNormalMap = new RendererNM(projectionMatrix);
     }
 
     public static void enableCulling() {
@@ -67,6 +71,7 @@ public class MasterRenderer {
         shader.loadViewMatrix(camera);
         renderer.render(entities);
         shader.stop();
+        rendererNormalMap.render(entitiesNormalMap, plane, lights, camera);
         terrainShader.start();
         terrainShader.loadPlane(plane);
         terrainShader.loadSkyColor(RED, GREEN, BLUE);
@@ -77,13 +82,16 @@ public class MasterRenderer {
         skyboxRenderer.render(camera, RED, GREEN, BLUE);
         terrains.clear();
         entities.clear();
+        entitiesNormalMap.clear();
     }
 
-    public void renderScene(List<Entity> entities, List<Terrain> terrains, List<Light> lights, Camera camera, Vector4f plane) {
+    public void renderScene(List<Entity> entities, List<Entity> entitiesNormalMap, List<Terrain> terrains, List<Light> lights, Camera camera, Vector4f plane) {
         for (Terrain terrain: terrains)
             processTerrain(terrain);
         for (Entity entity:entities)
             processEntity(entity);
+        for (Entity entity:entitiesNormalMap)
+            processEntityNormalMap(entity);
         render(lights, camera, plane);
     }
 
@@ -110,6 +118,18 @@ public class MasterRenderer {
         }
     }
 
+    public void processEntityNormalMap(Entity entity) {
+        TexturedModel entityModel = entity.getModel();
+        List<Entity> batch = entitiesNormalMap.get(entityModel);
+        if (batch != null)
+            batch.add(entity);
+        else {
+            List<Entity> newBatch = new ArrayList<>();
+            newBatch.add(entity);
+            entitiesNormalMap.put(entityModel, newBatch);
+        }
+    }
+
     private void createProjectionMatrix() {
         float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
         float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
@@ -131,6 +151,7 @@ public class MasterRenderer {
     public void cleanUp() {
         shader.cleanUp();
         terrainShader.cleanUp();
+        rendererNormalMap.cleanUp();
     }
 
 }

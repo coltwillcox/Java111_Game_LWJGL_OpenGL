@@ -4,7 +4,8 @@ public class WaterTile {
 	
 	public static final float TILE_SIZE = 60;
 	private float height;
-	private float x,z;
+	private float x;
+    private float z;
 
 	//Constructor.
 	public WaterTile(float centerX, float centerZ, float height) {
