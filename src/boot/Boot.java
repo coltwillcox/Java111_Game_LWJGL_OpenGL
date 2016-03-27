@@ -50,8 +50,8 @@ public class Boot {
 
         //Text.
         TextMaster.init(loader);
-        FontType font = new FontType(loader.loadTexture("fontArial"), new File("res/fontArial.fnt"));
-        GUIText text = new GUIText("Text", 1, font, new Vector2f(0, 0.5f), 0.1f, true);
+        FontType fontArialDF = new FontType(loader.loadTexture("fontArialDF"), new File("res/fontArialDF.fnt"));
+        GUIText text = new GUIText("mrk ZAJAC", 3, fontArialDF, new Vector2f(0, 0.1f), 1f, true);
         text.setColor(0, 1, 0);
 
         //GUI.
