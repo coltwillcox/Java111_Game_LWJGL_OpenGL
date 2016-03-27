@@ -14,7 +14,7 @@ public class Player extends Entity {
 
     public static final float RUN_SPEED = 20;
     public static final float TURN_SPEED = 160;
-    public static final float GRAVITY = -50;
+    public static final float GRAVITY = -50; //Also used in Particle.
     public static final float JUMP_POWER = 20;
     public static final float TERRAIN_HEIGHT = 0;
     public static final float AVATAR_HEIGHT = 6f;

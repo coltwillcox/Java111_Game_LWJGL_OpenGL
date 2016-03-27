@@ -14,6 +14,7 @@ import models.TexturedModel;
 import objConverter.ModelData;
 import objConverter.OBJFileLoader;
 import objConverterNormalMapping.OBJFileLoaderNM;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -21,6 +22,9 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
+import particles.Particle;
+import particles.ParticleMaster;
+import particles.ParticleSystem;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
@@ -47,6 +51,16 @@ public class Boot {
     public static void main(String[] args) {
         DisplayManager.createDisplay();
         Loader loader = new Loader();
+        MasterRenderer renderer = new MasterRenderer(loader);
+
+        //Particles.
+        ParticleMaster.init(loader, renderer.getProjectionMatrix());
+        ParticleSystem particleSystem = new ParticleSystem(50, 25, 0.3f, 4, 1);
+        particleSystem.randomizeRotation();
+        particleSystem.setDirection(new Vector3f(0, 1, 0), 0.1f);
+        particleSystem.setLifeError(0.1f);
+        particleSystem.setSpeedError(0.4f);
+        particleSystem.setScaleError(0.8f);
 
         //Text.
         TextMaster.init(loader);
@@ -193,7 +207,6 @@ public class Boot {
         lights.add(new Light(new Vector3f(455, terrain.getHeightOfTerrain(470, 400) + 14, 400), new Vector3f(2f, 2f, 0.1f), new Vector3f(1, 0.01f, 0.002f))); //Lamp light.
         Camera camera = new Camera(player);
 
-        MasterRenderer renderer = new MasterRenderer(loader);
         MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
 
         //Water.
@@ -210,6 +223,8 @@ public class Boot {
             player.move(terrain);
             camera.move();
             picker.update();
+            ParticleMaster.update();
+            particleSystem.generateParticles(player.getPosition());
 
             GL11.glEnable(GL30.GL_CLIP_DISTANCE0); //Enable clip plane 0.
 
@@ -241,6 +256,9 @@ public class Boot {
             //Render water.
             waterRenderer.render(waterTiles, camera, lights.get(0)); //0 is Sun.
 
+            //Render particles.
+            ParticleMaster.renderParticles(camera);
+
             //Render GUI.
             guiRenderer.render(guis);
 
@@ -251,6 +269,7 @@ public class Boot {
         }
 
         //Clear memory and close program.
+        ParticleMaster.cleanUp();
         TextMaster.cleanUp();
         fbos.cleanUp();
         waterShader.cleanUp();
