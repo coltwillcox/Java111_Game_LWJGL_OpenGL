@@ -141,7 +141,7 @@ public class Boot {
         TexturedModel staticModelLamp = new TexturedModel(modelLamp, new ModelTexture(loader.loadTexture("textureLamp")));
         ModelTexture textureLamp = staticModelLamp.getTexture();
         textureLamp.setUseFakeLighting(true);
-        entities.add(new Entity(staticModelLamp, new Vector3f(455, terrain.getHeightOfTerrain(455, 400), 400), 0, 0, 0, 1));
+        entities.add(new Entity(staticModelLamp, new Vector3f(470, terrain.getHeightOfTerrain(470, 400), 400), 0, 0, 0, 1));
         //Stormtrooper. Normal map. Player.
         TexturedModel texturedModelStormtrooper = new TexturedModel(OBJFileLoaderNM.loadOBJ("modelStormtrooper", loader), new ModelTexture(loader.loadTexture("textureStormtrooper")));
         texturedModelStormtrooper.getTexture().setMapNormal(loader.loadTexture("mapNormalStormtrooper"));
@@ -165,13 +165,16 @@ public class Boot {
         texturedModelBoulder.getTexture().setReflectivity(0.5f);
         //Random entities locations.
         Random random = new Random();
-        float x;
-        float y;
-        float z;
+        float x = 0;
+        float y = 0;
+        float z = 0;
+        //Do while, to make sure all pine trees are on the land (above -5 height of the water).
         for (int i = 0; i < 400; i++) {
-            x = random.nextFloat() * 800;
-            z = random.nextFloat() * 800;
-            y = terrain.getHeightOfTerrain(x, z);
+            do {
+                x = random.nextFloat() * 800;
+                z = random.nextFloat() * 800;
+                y = terrain.getHeightOfTerrain(x, z);
+            } while (y < -5);
             entities.add(new Entity(staticModelTree, random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 1.5f));
         }
         for (int i = 0; i < 50; i++) {
@@ -213,7 +216,7 @@ public class Boot {
         //Lights! Camera!
         List<Light> lights = new ArrayList<>();
         lights.add(new Light(new Vector3f(1000, 1000, 7000), new Vector3f(0.8f, 0.8f, 1.0f))); //Sun. :)
-        lights.add(new Light(new Vector3f(455, terrain.getHeightOfTerrain(470, 400) + 14, 400), new Vector3f(2f, 2f, 0.1f), new Vector3f(1, 0.01f, 0.002f))); //Lamp light.
+        lights.add(new Light(new Vector3f(470, terrain.getHeightOfTerrain(470, 400) + 14, 400), new Vector3f(2f, 2f, 0.1f), new Vector3f(1, 0.01f, 0.002f))); //Lamp light.
         Camera camera = new Camera(player);
 
         //Mouse picker.
@@ -223,9 +226,10 @@ public class Boot {
         WaterFrameBuffers fbos = new WaterFrameBuffers();
         WaterShader waterShader = new WaterShader();
         WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), fbos);
-        List<WaterTile> waterTiles = new ArrayList<>();
-        WaterTile water = new WaterTile(400, 400, 0); //x, z, height (or y).
-        waterTiles.add(water);
+        List<WaterTile> waters = new ArrayList<>();
+        for (int i = -1; i < 10; i++)
+            for (int j = -1; j < 10; j++)
+                waters.add(new WaterTile(i * WaterTile.TILE_SIZE * 2, j * WaterTile.TILE_SIZE * 2, -5));
 
         //Game logic, rendering...
         while (!Display.isCloseRequested()) {
@@ -238,16 +242,16 @@ public class Boot {
 
             //Render reflection texture.
             fbos.bindReflectionFrameBuffer();
-            float distance = 2 * (camera.getPosition().getY() - water.getHeight());
+            float distance = 2 * (camera.getPosition().getY() - waters.get(0).getHeight());
             camera.getPosition().setY(camera.getPosition().getY() - distance);
             camera.invertPitch();
-            renderer.renderScene(entities, entitiesNormalMap, terrains, lights, camera, new Vector4f(0, 1, 0, -water.getHeight() + 1f )); //Clip plane with height.
+            renderer.renderScene(entities, entitiesNormalMap, terrains, lights, camera, new Vector4f(0, 1, 0, -waters.get(0).getHeight() + 1f )); //Clip plane with height.
             camera.getPosition().setY(camera.getPosition().getY() + distance);
             camera.invertPitch();
 
             //Render refraction texture.
             fbos.bindRefractionFrameBuffer();
-            renderer.renderScene(entities, entitiesNormalMap, terrains, lights, camera, new Vector4f(0, -1, 0, water.getHeight()));
+            renderer.renderScene(entities, entitiesNormalMap, terrains, lights, camera, new Vector4f(0, -1, 0, waters.get(0).getHeight()));
 
             //Render scene and player to screen.
             GL11.glDisable(GL30.GL_CLIP_DISTANCE0); //Disable cliping plane.
@@ -256,7 +260,7 @@ public class Boot {
             renderer.renderScene(entities, entitiesNormalMap, terrains, lights, camera, new Vector4f(0, -1, 0, 15));
 
             //Render water.
-            waterRenderer.render(waterTiles, camera, lights.get(0)); //0 is Sun.
+            waterRenderer.render(waters, camera, lights.get(0)); //0 is Sun.
 
             //Render particles.
             ParticleMaster.renderParticles(camera);

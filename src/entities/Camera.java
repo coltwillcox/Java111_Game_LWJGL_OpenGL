@@ -26,9 +26,9 @@ public class Camera {
     }
 
     public void move() {
-        if(Mouse.isButtonDown(1)) {
+        if(Mouse.isButtonDown(1) || distanceFromPlayer <= 0) {
             //Grab mouse cursor so it is not shown on the screen.
-            if(!Mouse.isGrabbed())
+            if(!Mouse.isGrabbed() && distanceFromPlayer > 0)
                 Mouse.setGrabbed(true);
             calculateAngleAroundPlayer();
             calculatePitch();
@@ -45,7 +45,7 @@ public class Camera {
             }
         }
         //Show mouse cursor again.
-        if(!Mouse.isButtonDown(1) && Mouse.isGrabbed())
+        if(!Mouse.isButtonDown(1) && Mouse.isGrabbed() && distanceFromPlayer > 0)
             Mouse.setGrabbed(false);
 
         calculateZoom();
@@ -59,10 +59,12 @@ public class Camera {
         float zoomLevel = Mouse.getDWheel() * 0.05f;
         if (distanceFromPlayer - zoomLevel > -1f && distanceFromPlayer - zoomLevel < 60f) //Min and max zoom. -1 looks like FPS. :)
             distanceFromPlayer -= zoomLevel;
+        if (distanceFromPlayer <= 0)
+            Mouse.setGrabbed(true);
     }
 
     private void calculatePitch() {
-        if (Mouse.isButtonDown(1)) {
+        if (Mouse.isButtonDown(1) || distanceFromPlayer <= 0) {
             float pitchChange = Mouse.getDY() * 0.1f;
             if (pitch - pitchChange > 1 && pitch - pitchChange < 80) //Min and max pitch.
                 pitch -= pitchChange;
@@ -70,7 +72,7 @@ public class Camera {
     }
 
     private void calculateAngleAroundPlayer() {
-        if (Mouse.isButtonDown(1)) {
+        if (Mouse.isButtonDown(1) || distanceFromPlayer <= 0) {
             float angleChange = Mouse.getDX() * 0.3f;
             angleAroundPlayer -= angleChange;
         }
