@@ -36,7 +36,8 @@ public class ParticleMaster {
         //First, iterate through each list that HashMap has in it..
         Iterator<Map.Entry<ParticleTexture, List<Particle>>> mapIterator = particles.entrySet().iterator();
         while (mapIterator.hasNext()) {
-            List<Particle> list = mapIterator.next().getValue();
+            Map.Entry<ParticleTexture, List<Particle>> entry = mapIterator.next();
+            List<Particle> list = entry.getValue();
             //Second, iterate through each particle that list has, and remove dead particles from the list.
             Iterator<Particle> iterator = list.iterator();
             while (iterator.hasNext()) {
@@ -48,7 +49,8 @@ public class ParticleMaster {
                         mapIterator.remove();
                 }
             }
-            InsertionSort.sortHighToLow(list);
+            if (!entry.getKey().isAdditive())
+                InsertionSort.sortHighToLow(list);
         }
     }
 

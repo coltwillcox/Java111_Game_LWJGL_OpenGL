@@ -14,7 +14,6 @@ import models.TexturedModel;
 import objConverter.ModelData;
 import objConverter.OBJFileLoader;
 import objConverterNormalMapping.OBJFileLoaderNM;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -22,7 +21,6 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
-import particles.Particle;
 import particles.ParticleMaster;
 import particles.ParticleSystem;
 import particles.ParticleTexture;
@@ -55,14 +53,23 @@ public class Boot {
         MasterRenderer renderer = new MasterRenderer(loader);
 
         //Particles.
-        ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("textureParticleAtlasFire"), 4, false);
         ParticleMaster.init(loader, renderer.getProjectionMatrix());
-        ParticleSystem particleSystem = new ParticleSystem(particleTexture, 400, 10, 0.1f, 5, 1.5f);
-        particleSystem.randomizeRotation();
-        particleSystem.setDirection(new Vector3f(0, 1, 0), 0.1f);
-        particleSystem.setLifeError(0.1f);
-        particleSystem.setSpeedError(0.4f);
-        particleSystem.setScaleError(0.8f);
+        //Flame particle. Used for mouse click.
+        ParticleTexture particleTextureFlame = new ParticleTexture(loader.loadTexture("textureParticleAtlasFlame"), 4, false);
+        ParticleSystem particleSystemFlame = new ParticleSystem(particleTextureFlame, 40, 10, 0.1f, 5, 1.5f);
+        particleSystemFlame.randomizeRotation();
+        particleSystemFlame.setDirection(new Vector3f(0, 1, 0), 0.1f);
+        particleSystemFlame.setLifeError(0.1f);
+        particleSystemFlame.setSpeedError(0.4f);
+        particleSystemFlame.setScaleError(0.8f);
+        //Fire particle. Used for Charizard.
+        ParticleTexture particleTextureFire = new ParticleTexture(loader.loadTexture("textureParticleAtlasFire"), 8, true);
+        ParticleSystem particleSystemFire = new ParticleSystem(particleTextureFire, 40, 5, 0, 3, 5f);
+        particleSystemFire.randomizeRotation();
+        particleSystemFire.setDirection(new Vector3f(0, 1, 0), 0.1f);
+        particleSystemFire.setLifeError(0.1f);
+        particleSystemFire.setSpeedError(0.4f);
+        particleSystemFire.setScaleError(0.8f);
 
         //Text.
         TextMaster.init(loader);
@@ -209,6 +216,7 @@ public class Boot {
         lights.add(new Light(new Vector3f(455, terrain.getHeightOfTerrain(470, 400) + 14, 400), new Vector3f(2f, 2f, 0.1f), new Vector3f(1, 0.01f, 0.002f))); //Lamp light.
         Camera camera = new Camera(player);
 
+        //Mouse picker.
         MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
 
         //Water.
@@ -257,7 +265,8 @@ public class Boot {
             ParticleMaster.renderParticles(camera);
             Vector3f terrainPoint = picker.getCurrentTerrainPoint();
             if (terrainPoint != null && Mouse.isButtonDown(0))
-                particleSystem.generateParticles(terrainPoint);
+                particleSystemFlame.generateParticles(terrainPoint);
+            particleSystemFire.generateParticles(new Vector3f(380, terrain.getHeightOfTerrain(380, 470) + 2, 470));
 
             //Render GUI.
             guiRenderer.render(guis);

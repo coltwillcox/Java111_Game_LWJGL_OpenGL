@@ -20,6 +20,7 @@ public class Particle {
     private Vector2f texOffset1 = new Vector2f();
     private Vector2f texOffset2 = new Vector2f();
     private ParticleTexture texture;
+    private Vector3f reusableChange = new Vector3f();
 
     //Constructor.
     public Particle(ParticleTexture texture, Vector3f position, Vector3f velocity, float gravityEffect, float lifeLength, float rotation, float scale) {
@@ -35,9 +36,9 @@ public class Particle {
 
     protected boolean update(Camera camera) {
         velocity.setY(velocity.getY() + Player.GRAVITY * gravityEffect * DisplayManager.getFrameTimeSeconds());
-        Vector3f change = new Vector3f(velocity);
-        change.scale(DisplayManager.getFrameTimeSeconds());
-        Vector3f.add(change, position, position);
+        reusableChange.set(velocity);
+        reusableChange.scale(DisplayManager.getFrameTimeSeconds());
+        Vector3f.add(reusableChange, position, position);
         distance = Vector3f.sub(camera.getPosition(), position, null).lengthSquared();
         updateTextureCoordInfo();
         elapsedTime += DisplayManager.getFrameTimeSeconds();
