@@ -20,7 +20,6 @@ public class Camera {
     private float horizontalDistance;
     private float verticalDistance;
 
-
     //Constructor.
     public Camera(Player player) {
         this.player = player;
@@ -65,7 +64,7 @@ public class Camera {
     private void calculatePitch() {
         if (Mouse.isButtonDown(1)) {
             float pitchChange = Mouse.getDY() * 0.1f;
-            if (pitch - pitchChange > 1 && pitch - pitchChange < 85) //Min and max pitch.
+            if (pitch - pitchChange > 1 && pitch - pitchChange < 80) //Min and max pitch.
                 pitch -= pitchChange;
         }
     }
@@ -113,6 +112,10 @@ public class Camera {
 
     public float getRoll() {
         return roll;
+    }
+
+    public float getDistanceFromPlayer() {
+        return distanceFromPlayer;
     }
 
 }

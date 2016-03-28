@@ -62,7 +62,7 @@ public class Boot {
         particleSystemFlame.setLifeError(0.1f);
         particleSystemFlame.setSpeedError(0.4f);
         particleSystemFlame.setScaleError(0.8f);
-        //Fire particle. Used for Charizard.
+        //Fire particle.
         ParticleTexture particleTextureFire = new ParticleTexture(loader.loadTexture("textureParticleAtlasFire"), 8, true);
         ParticleSystem particleSystemFire = new ParticleSystem(particleTextureFire, 40, 5, 0, 3, 5f);
         particleSystemFire.randomizeRotation();
@@ -70,6 +70,14 @@ public class Boot {
         particleSystemFire.setLifeError(0.1f);
         particleSystemFire.setSpeedError(0.4f);
         particleSystemFire.setScaleError(0.8f);
+        //Smoke particle.
+        ParticleTexture particleTextureSmoke = new ParticleTexture(loader.loadTexture("textureParticleAtlasSmoke"), 8, true);
+        ParticleSystem particleSystemSmoke = new ParticleSystem(particleTextureSmoke, 40, 5, 0, 3, 5f);
+        particleSystemSmoke.randomizeRotation();
+        particleSystemSmoke.setDirection(new Vector3f(0, 1, 0), 0.1f);
+        particleSystemSmoke.setLifeError(0.1f);
+        particleSystemSmoke.setSpeedError(0.4f);
+        particleSystemSmoke.setScaleError(0.8f);
 
         //Text.
         TextMaster.init(loader);
@@ -78,14 +86,10 @@ public class Boot {
         text.setColor(0, 1, 0);
 
         //GUI.
-        List<GuiTexture> guis = new ArrayList<>(); //List for all GUI objects (images).
-        GuiTexture coins = new GuiTexture(loader.loadTexture("textureGuiCoins"), new Vector2f(-0.8f, 0.85f), new Vector2f(0.25f, 0.35f)); //Texture, position, scale.
-        guis.add(coins);
-        GuiTexture health = new GuiTexture(loader.loadTexture("textureGuiHealth"), new Vector2f(-0.7f, -0.85f), new Vector2f(0.25f, 0.35f));
-        guis.add(health);
-        GuiTexture armor = new GuiTexture(loader.loadTexture("textureGuiArmor"), new Vector2f(0.7f, -0.85f), new Vector2f(0.25f, 0.35f));
-        guis.add(armor);
         GuiRenderer guiRenderer = new GuiRenderer(loader);
+        List<GuiTexture> guis = new ArrayList<>(); //List for all GUI objects (images).
+        GuiTexture hud = new GuiTexture(loader.loadTexture("textureHUD"), new Vector2f(0, 0), new Vector2f(1.6f, 2.55f)); //Texture, position, scale.
+        guis.add(hud);
 
         //Terrain.
         List<Terrain> terrains = new ArrayList<>();
@@ -101,15 +105,6 @@ public class Boot {
         //Entities
         List<Entity> entities = new ArrayList<>(); //List to keep all entities. Manual and random created ones.
         List<Entity> entitiesNormalMap = new ArrayList<>(); //Normal Mapped entities.
-        //Charizard.
-        ModelData dataCharizard = OBJFileLoader.loadOBJ("modelCharizard");
-        RawModel modelCharizard = loader.loadToVAO(dataCharizard.getVertices(), dataCharizard.getTextureCoords(), dataCharizard.getNormals(), dataCharizard.getIndices());
-        TexturedModel staticModelCharizard = new TexturedModel(modelCharizard, new ModelTexture(loader.loadTexture("textureCharizard")));
-        ModelTexture textureCharizard = staticModelCharizard.getTexture();
-        textureCharizard.setShineDamper(100);
-        textureCharizard.setReflectivity(100);
-        Entity entityCharizard = new Entity(staticModelCharizard, new Vector3f(380, terrain.getHeightOfTerrain(380, 470), 470), 0, 0, 0, 0.5f);
-        entities.add(entityCharizard);
         //Pine tree.
         ModelData dataTree = OBJFileLoader.loadOBJ("modelTree");
         RawModel modelTree = loader.loadToVAO(dataTree.getVertices(), dataTree.getTextureCoords(), dataTree.getNormals(), dataTree.getIndices());
@@ -147,6 +142,17 @@ public class Boot {
         ModelTexture textureLamp = staticModelLamp.getTexture();
         textureLamp.setUseFakeLighting(true);
         entities.add(new Entity(staticModelLamp, new Vector3f(455, terrain.getHeightOfTerrain(455, 400), 400), 0, 0, 0, 1));
+        //Stormtrooper. Normal map. Player.
+        TexturedModel texturedModelStormtrooper = new TexturedModel(OBJFileLoaderNM.loadOBJ("modelStormtrooper", loader), new ModelTexture(loader.loadTexture("textureStormtrooper")));
+        texturedModelStormtrooper.getTexture().setMapNormal(loader.loadTexture("mapNormalStormtrooper"));
+        texturedModelStormtrooper.getTexture().setShineDamper(100);
+        texturedModelStormtrooper.getTexture().setReflectivity(1f);
+        //R2D2. Normal map.
+        TexturedModel texturedModelR2D2 = new TexturedModel(OBJFileLoaderNM.loadOBJ("modelR2D2", loader), new ModelTexture(loader.loadTexture("textureR2D2")));
+        texturedModelR2D2.getTexture().setMapNormal(loader.loadTexture("mapNormalR2D2"));
+        texturedModelR2D2.getTexture().setShineDamper(100);
+        texturedModelR2D2.getTexture().setReflectivity(1f);
+        entitiesNormalMap.add(new Entity(texturedModelR2D2, new Vector3f(380, terrain.getHeightOfTerrain(380, 470), 470), 0, 180, 0, 1.5f));
         //Barrel. Normal map.
         TexturedModel texturedModelBarrel = new TexturedModel(OBJFileLoaderNM.loadOBJ("modelBarrel", loader), new ModelTexture(loader.loadTexture("textureBarrel")));
         texturedModelBarrel.getTexture().setMapNormal(loader.loadTexture("mapNormalBarrel"));
@@ -201,13 +207,7 @@ public class Boot {
         }
 
         //Player
-        ModelData dataPlayer = OBJFileLoader.loadOBJ("modelPlayer");
-        RawModel modelPlayer = loader.loadToVAO(dataPlayer.getVertices(), dataPlayer.getTextureCoords(), dataPlayer.getNormals(), dataPlayer.getIndices());
-        TexturedModel staticModelPlayer = new TexturedModel(modelPlayer, new ModelTexture(loader.loadTexture("texturePlayer")));
-        ModelTexture texturePlayer = staticModelPlayer.getTexture();
-        texturePlayer.setShineDamper(100);
-        texturePlayer.setReflectivity(100);
-        Player player = new Player(staticModelPlayer, new Vector3f(450, 0, 450), 0, 225, 0, 0.5f);
+        Player player = new Player(texturedModelStormtrooper, new Vector3f(450, 0, 450), 0, 225, 0, 2f);
         entities.add(player);
 
         //Lights! Camera!
@@ -224,7 +224,7 @@ public class Boot {
         WaterShader waterShader = new WaterShader();
         WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), fbos);
         List<WaterTile> waterTiles = new ArrayList<>();
-        WaterTile water = new WaterTile(400, 400, -15); //x, z, height (or y).
+        WaterTile water = new WaterTile(400, 400, 0); //x, z, height (or y).
         waterTiles.add(water);
 
         //Game logic, rendering...
@@ -255,9 +255,6 @@ public class Boot {
             renderer.processEntity(player);
             renderer.renderScene(entities, entitiesNormalMap, terrains, lights, camera, new Vector4f(0, -1, 0, 15));
 
-            //Charizard rotation.
-            entityCharizard.increaseRotation(0, 0.1f, 0);
-
             //Render water.
             waterRenderer.render(waterTiles, camera, lights.get(0)); //0 is Sun.
 
@@ -266,13 +263,14 @@ public class Boot {
             Vector3f terrainPoint = picker.getCurrentTerrainPoint();
             if (terrainPoint != null && Mouse.isButtonDown(0))
                 particleSystemFlame.generateParticles(terrainPoint);
-            particleSystemFire.generateParticles(new Vector3f(380, terrain.getHeightOfTerrain(380, 470) + 2, 470));
+            particleSystemFire.generateParticles(new Vector3f(300, terrain.getHeightOfTerrain(300, 450), 450));
+            particleSystemSmoke.generateParticles(new Vector3f(380, terrain.getHeightOfTerrain(380, 470), 470));
 
-            //Render GUI.
-            guiRenderer.render(guis);
-
-            //Render text.
-            TextMaster.render();
+            //Render hud and text if camera goes FPS.
+            if (camera.getDistanceFromPlayer() <= 0) {
+                guiRenderer.render(guis);
+                TextMaster.render();
+            }
 
             DisplayManager.updateDisplay();
         }
