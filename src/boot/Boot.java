@@ -25,6 +25,7 @@ import org.lwjgl.util.vector.Vector4f;
 import particles.Particle;
 import particles.ParticleMaster;
 import particles.ParticleSystem;
+import particles.ParticleTexture;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
@@ -54,8 +55,9 @@ public class Boot {
         MasterRenderer renderer = new MasterRenderer(loader);
 
         //Particles.
+        ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("textureParticleAtlasFire"), 4, false);
         ParticleMaster.init(loader, renderer.getProjectionMatrix());
-        ParticleSystem particleSystem = new ParticleSystem(50, 25, 0.3f, 4, 1);
+        ParticleSystem particleSystem = new ParticleSystem(particleTexture, 400, 10, 0.1f, 5, 1.5f);
         particleSystem.randomizeRotation();
         particleSystem.setDirection(new Vector3f(0, 1, 0), 0.1f);
         particleSystem.setLifeError(0.1f);
@@ -99,7 +101,7 @@ public class Boot {
         ModelTexture textureCharizard = staticModelCharizard.getTexture();
         textureCharizard.setShineDamper(100);
         textureCharizard.setReflectivity(100);
-        Entity entityCharizard = new Entity(staticModelCharizard, new Vector3f(50, terrain.getHeightOfTerrain(50, 50), 50), 0, 0, 0, 0.5f);
+        Entity entityCharizard = new Entity(staticModelCharizard, new Vector3f(380, terrain.getHeightOfTerrain(380, 470), 470), 0, 0, 0, 0.5f);
         entities.add(entityCharizard);
         //Pine tree.
         ModelData dataTree = OBJFileLoader.loadOBJ("modelTree");
@@ -217,14 +219,12 @@ public class Boot {
         WaterTile water = new WaterTile(400, 400, -15); //x, z, height (or y).
         waterTiles.add(water);
 
-
         //Game logic, rendering...
         while (!Display.isCloseRequested()) {
             player.move(terrain);
             camera.move();
             picker.update();
-            ParticleMaster.update();
-            particleSystem.generateParticles(player.getPosition());
+            ParticleMaster.update(camera);
 
             GL11.glEnable(GL30.GL_CLIP_DISTANCE0); //Enable clip plane 0.
 
@@ -247,17 +247,17 @@ public class Boot {
             renderer.processEntity(player);
             renderer.renderScene(entities, entitiesNormalMap, terrains, lights, camera, new Vector4f(0, -1, 0, 15));
 
-            //Dragging Charizard.
+            //Charizard rotation.
             entityCharizard.increaseRotation(0, 0.1f, 0);
-            Vector3f terrainPoint = picker.getCurrentTerrainPoint();
-            if (terrainPoint != null && Mouse.isButtonDown(0))
-                entityCharizard.setPosition(terrainPoint);
 
             //Render water.
             waterRenderer.render(waterTiles, camera, lights.get(0)); //0 is Sun.
 
             //Render particles.
             ParticleMaster.renderParticles(camera);
+            Vector3f terrainPoint = picker.getCurrentTerrainPoint();
+            if (terrainPoint != null && Mouse.isButtonDown(0))
+                particleSystem.generateParticles(terrainPoint);
 
             //Render GUI.
             guiRenderer.render(guis);

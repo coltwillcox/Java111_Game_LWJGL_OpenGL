@@ -16,13 +16,15 @@ public class ParticleSystem {
     private float speedError;
     private float lifeError;
     private float scaleError = 0;
+    private float directionDeviation = 0;
     private boolean randomRotation = false;
     private Vector3f direction;
-    private float directionDeviation = 0;
     private Random random = new Random();
+    private ParticleTexture texture;
 
     //Constructor.
-    public ParticleSystem(float pps, float speed, float gravityComplient, float lifeLength, float scale) {
+    public ParticleSystem(ParticleTexture texture, float pps, float speed, float gravityComplient, float lifeLength, float scale) {
+        this.texture = texture;
         this.pps = pps;
         this.averageSpeed = speed;
         this.gravityComplient = gravityComplient;
@@ -57,13 +59,6 @@ public class ParticleSystem {
         this.lifeError = error * averageLifeLength;
     }
 
-    /**
-     * @param error - A number between 0 and 1, where 0 means no error margin.
-     */
-    public void setScaleError(float error) {
-        this.scaleError = error * averageScale;
-    }
-
     public void generateParticles(Vector3f systemCenter) {
         float delta = DisplayManager.getFrameTimeSeconds();
         float particlesToCreate = pps * delta;
@@ -85,7 +80,7 @@ public class ParticleSystem {
         velocity.scale(generateValue(averageSpeed, speedError));
         float scale = generateValue(averageScale, scaleError);
         float lifeLength = generateValue(averageLifeLength, lifeError);
-        new Particle(new Vector3f(center), velocity, gravityComplient, lifeLength, generateRotation(), scale);
+        new Particle(texture, new Vector3f(center), velocity, gravityComplient, lifeLength, generateRotation(), scale);
     }
 
     private float generateValue(float average, float errorMargin) {
@@ -128,6 +123,13 @@ public class ParticleSystem {
         float x = (float) (rootOneMinusZSquared * Math.cos(theta));
         float y = (float) (rootOneMinusZSquared * Math.sin(theta));
         return new Vector3f(x, y, z);
+    }
+
+    /**
+     * @param error - A number between 0 and 1, where 0 means no error margin.
+     */
+    public void setScaleError(float error) {
+        this.scaleError = error * averageScale;
     }
 
 }
