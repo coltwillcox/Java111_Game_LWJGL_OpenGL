@@ -54,8 +54,8 @@ public class Boot {
         //Text.
         TextMaster.init(loader);
         FontType fontArialDF = new FontType(loader.loadTexture("fontArialDF"), new File("res/fontArialDF.fnt"));
-        GUIText text = new GUIText("mrk ZAJAC", 3, fontArialDF, new Vector2f(0, 0.1f), 1f, true);
-        text.setColor(0, 1, 0);
+        GUIText text = new GUIText("FPS", 2, fontArialDF, new Vector2f(0, 0.1f), 1f, true);
+        text.setColor(0.2f, 0.6f, 1);
 
         //GUI.
         GuiRenderer guiRenderer = new GuiRenderer(loader);
@@ -101,12 +101,10 @@ public class Boot {
         ModelData dataBox = OBJFileLoader.loadOBJ("modelBox");
         RawModel modelBox = loader.loadToVAO(dataBox.getVertices(), dataBox.getTextureCoords(), dataBox.getNormals(), dataBox.getIndices());
         TexturedModel staticModelBox = new TexturedModel(modelBox, new ModelTexture(loader.loadTexture("textureBox")));
-        ModelTexture textureBox = staticModelBox.getTexture();
         //Rocks.
         ModelData dataRocks = OBJFileLoader.loadOBJ("modelRocks");
         RawModel modelRocks = loader.loadToVAO(dataRocks.getVertices(), dataRocks.getTextureCoords(), dataRocks.getNormals(), dataRocks.getIndices());
         TexturedModel staticModelRocks = new TexturedModel(modelRocks, new ModelTexture(loader.loadTexture("textureRocks")));
-        ModelTexture textureRocks = staticModelBox.getTexture();
         //Lamp.
         ModelData dataLamp = OBJFileLoader.loadOBJ("modelLamp");
         RawModel modelLamp = loader.loadToVAO(dataLamp.getVertices(), dataLamp.getTextureCoords(), dataLamp.getNormals(), dataLamp.getIndices());
@@ -135,21 +133,27 @@ public class Boot {
         texturedModelBoulder.getTexture().setMapNormal(loader.loadTexture("mapNormalBoulder"));
         texturedModelBoulder.getTexture().setShineDamper(10);
         texturedModelBoulder.getTexture().setReflectivity(0.5f);
+        //Zaralok shark. Normal map.
+        TexturedModel texturedModelZaralok = new TexturedModel(OBJFileLoaderNM.loadOBJ("modelZaralok", loader), new ModelTexture(loader.loadTexture("textureZaralok")));
+        texturedModelZaralok.getTexture().setMapNormal(loader.loadTexture("mapNormalZaralok"));
+        texturedModelZaralok.getTexture().setShineDamper(10);
+        texturedModelZaralok.getTexture().setReflectivity(0.5f);
+        Entity zaralok = new Entity(texturedModelZaralok, new Vector3f(400, -16, 700), 0, 180, 0, 1);
+        entitiesNormalMap.add(zaralok);
         //Random entities locations.
         Random random = new Random();
-        float x = 0;
-        float y = 0;
-        float z = 0;
-        //Do while, to make sure all pine trees are on the land (above -5 height of the water).
-        for (int i = 0; i < 400; i++) {
+        float x;
+        float y;
+        float z;
+        for (int i = 0; i < 50; i++) {
+            //Do while, to make sure all pine trees are on the land (above -5 height of the water).
             do {
                 x = random.nextFloat() * 800;
                 z = random.nextFloat() * 800;
                 y = terrain.getHeightOfTerrain(x, z);
             } while (y < -5);
             entities.add(new Entity(staticModelTree, random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 1.5f));
-        }
-        for (int i = 0; i < 50; i++) {
+
             x = random.nextFloat() * 800;
             z = random.nextFloat() * 800;
             y = terrain.getHeightOfTerrain(x, z);
@@ -232,15 +236,28 @@ public class Boot {
             for (int j = -1; j < 10; j++)
                 waters.add(new WaterTile(i * WaterTile.TILE_SIZE * 2, j * WaterTile.TILE_SIZE * 2, -5));
 
+        //FPS counter.
+        float totalDelta = 0;
+        float fps = 0;
+
         //Game logic, rendering...
         while (!Display.isCloseRequested()) {
             player.move(terrain);
             camera.move();
             picker.update();
             ParticleMaster.update(camera);
-
             renderer.renderShadowMap(entities, lights.get(0));
             GL11.glEnable(GL30.GL_CLIP_DISTANCE0); //Enable clip plane 0.
+
+            //FPS counter.
+            totalDelta += DisplayManager.getFrameTimeSeconds();
+            fps++;
+            if (totalDelta > 1) {
+                text.setTextString(Float.toString(fps));
+                TextMaster.loadText(text);
+                totalDelta = 0;
+                fps = 0;
+            }
 
             //Render reflection texture.
             fbos.bindReflectionFrameBuffer();

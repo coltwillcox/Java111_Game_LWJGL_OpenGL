@@ -6,6 +6,7 @@ import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.PixelFormat;
 
 /**
@@ -25,7 +26,8 @@ public class DisplayManager {
         try {
             Display.setTitle("NiSamNeZnamKakoSamOsnovnuŠkoluZavršio");
             Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
-            Display.create(new PixelFormat(), attribs);
+            Display.create(new PixelFormat().withSamples(8).withDepthBits(24), attribs); //Also enables antialiasing.
+            GL11.glEnable(GL13.GL_MULTISAMPLE); //Enable MSAA.
         } catch (LWJGLException e) {
             e.printStackTrace();
         }

@@ -90,11 +90,11 @@ public class MasterRenderer {
     }
 
     public void renderScene(List<Entity> entities, List<Entity> entitiesNormalMap, List<Terrain> terrains, List<Light> lights, Camera camera, Vector4f plane) {
-        for (Terrain terrain: terrains)
+        for (Terrain terrain : terrains)
             processTerrain(terrain);
-        for (Entity entity:entities)
+        for (Entity entity : entities)
             processEntity(entity);
-        for (Entity entity:entitiesNormalMap)
+        for (Entity entity : entitiesNormalMap)
             processEntityNormalMap(entity);
         render(lights, camera, plane);
     }
