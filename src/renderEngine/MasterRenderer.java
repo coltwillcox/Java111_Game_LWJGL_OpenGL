@@ -8,9 +8,11 @@ import entitiesNormalMapping.RendererNM;
 import models.TexturedModel;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector4f;
 import entities.EntityShader;
+import shadows.ShadowMapMasterRenderer;
 import terrains.TerrainRenderer;
 import terrains.TerrainShader;
 import skybox.SkyboxRenderer;
@@ -26,9 +28,9 @@ import java.util.Map;
 
 public class MasterRenderer {
 
-    private static final float FOV = 75;
-    private static final float NEAR_PLANE = 0.1f;
-    private static final float FAR_PLANE = 1000;
+    public static final float FOV = 65;
+    public static final float NEAR_PLANE = 0.1f;
+    public static final float FAR_PLANE = 1000;
     public static final float RED = (float) 0.1f; //Fog color. Can be 100/255, easy to use with color pickers.
     public static final float GREEN = (float) 0.4f;
     public static final float BLUE = (float) 0.2f;
@@ -42,15 +44,17 @@ public class MasterRenderer {
     private List<Terrain> terrains = new ArrayList<>();
     private SkyboxRenderer skyboxRenderer;
     private RendererNM rendererNormalMap;
+    private ShadowMapMasterRenderer shadowMapMasterRenderer;
 
     //Constructor.
-    public MasterRenderer(Loader loader) {
+    public MasterRenderer(Loader loader, Camera camera) {
         enableCulling(); //Do not render back faces of the model (inside of the model). Optimization.
         createProjectionMatrix();
         renderer = new EntityRenderer(shader, projectionMatrix);
         terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
         skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
         rendererNormalMap = new RendererNM(projectionMatrix);
+        this.shadowMapMasterRenderer = new ShadowMapMasterRenderer(camera);
     }
 
     public static void enableCulling() {
@@ -77,7 +81,7 @@ public class MasterRenderer {
         terrainShader.loadSkyColor(RED, GREEN, BLUE);
         terrainShader.loadLights(lights);
         terrainShader.loadViewMatrix(camera);
-        terrainRenderer.render(terrains);
+        terrainRenderer.render(terrains, shadowMapMasterRenderer.getToShadowMapSpaceMatrix());
         terrainShader.stop();
         skyboxRenderer.render(camera, RED, GREEN, BLUE);
         terrains.clear();
@@ -95,11 +99,20 @@ public class MasterRenderer {
         render(lights, camera, plane);
     }
 
+    public void renderShadowMap(List<Entity> entityList, Light sun) {
+        for (Entity entity : entityList)
+            processEntity(entity);
+        shadowMapMasterRenderer.render(entities, sun);
+        entities.clear();
+    }
+
     //Called once every frame.
     public void prepare() {
         GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
         GL11.glClearColor(RED, GREEN, BLUE, 1); //Sky color. Red, green, blue, alpha.
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+        GL13.glActiveTexture(GL13.GL_TEXTURE5);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, getShadowMapTexture());
     }
 
     public void processTerrain(Terrain terrain) {
@@ -131,16 +144,16 @@ public class MasterRenderer {
     }
 
     private void createProjectionMatrix() {
+        projectionMatrix = new Matrix4f();
         float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
-        float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
+        float y_scale = (float) (1f / Math.tan(Math.toRadians(FOV / 2f)));
         float x_scale = y_scale / aspectRatio;
         float frustum_length = FAR_PLANE - NEAR_PLANE;
-        projectionMatrix = new Matrix4f();
         projectionMatrix.m00 = x_scale;
         projectionMatrix.m11 = y_scale;
         projectionMatrix.m22 = -((FAR_PLANE + NEAR_PLANE) / frustum_length);
         projectionMatrix.m23 = -1;
-        projectionMatrix.m32 = -((2 * NEAR_PLANE * FAR_PLANE) /frustum_length);
+        projectionMatrix.m32 = -((2 * NEAR_PLANE * FAR_PLANE) / frustum_length);
         projectionMatrix.m33 = 0;
     }
 
@@ -148,10 +161,15 @@ public class MasterRenderer {
         return projectionMatrix;
     }
 
+    public int getShadowMapTexture() {
+        return shadowMapMasterRenderer.getShadowMap();
+    }
+
     public void cleanUp() {
         shader.cleanUp();
         terrainShader.cleanUp();
         rendererNormalMap.cleanUp();
+        shadowMapMasterRenderer.cleanUp();
     }
 
 }

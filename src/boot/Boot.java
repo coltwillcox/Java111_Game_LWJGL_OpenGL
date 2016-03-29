@@ -50,34 +50,6 @@ public class Boot {
     public static void main(String[] args) {
         DisplayManager.createDisplay();
         Loader loader = new Loader();
-        MasterRenderer renderer = new MasterRenderer(loader);
-
-        //Particles.
-        ParticleMaster.init(loader, renderer.getProjectionMatrix());
-        //Flame particle. Used for mouse click.
-        ParticleTexture particleTextureFlame = new ParticleTexture(loader.loadTexture("textureParticleAtlasFlame"), 4, false);
-        ParticleSystem particleSystemFlame = new ParticleSystem(particleTextureFlame, 40, 10, 0.1f, 5, 1.5f);
-        particleSystemFlame.randomizeRotation();
-        particleSystemFlame.setDirection(new Vector3f(0, 1, 0), 0.1f);
-        particleSystemFlame.setLifeError(0.1f);
-        particleSystemFlame.setSpeedError(0.4f);
-        particleSystemFlame.setScaleError(0.8f);
-        //Fire particle.
-        ParticleTexture particleTextureFire = new ParticleTexture(loader.loadTexture("textureParticleAtlasFire"), 8, true);
-        ParticleSystem particleSystemFire = new ParticleSystem(particleTextureFire, 40, 5, 0, 3, 5f);
-        particleSystemFire.randomizeRotation();
-        particleSystemFire.setDirection(new Vector3f(0, 1, 0), 0.1f);
-        particleSystemFire.setLifeError(0.1f);
-        particleSystemFire.setSpeedError(0.4f);
-        particleSystemFire.setScaleError(0.8f);
-        //Smoke particle.
-        ParticleTexture particleTextureSmoke = new ParticleTexture(loader.loadTexture("textureParticleAtlasSmoke"), 8, true);
-        ParticleSystem particleSystemSmoke = new ParticleSystem(particleTextureSmoke, 40, 5, 0, 3, 5f);
-        particleSystemSmoke.randomizeRotation();
-        particleSystemSmoke.setDirection(new Vector3f(0, 1, 0), 0.1f);
-        particleSystemSmoke.setLifeError(0.1f);
-        particleSystemSmoke.setSpeedError(0.4f);
-        particleSystemSmoke.setScaleError(0.8f);
 
         //Text.
         TextMaster.init(loader);
@@ -215,9 +187,38 @@ public class Boot {
 
         //Lights! Camera!
         List<Light> lights = new ArrayList<>();
-        lights.add(new Light(new Vector3f(1000, 1000, 7000), new Vector3f(0.8f, 0.8f, 1.0f))); //Sun. :)
+        lights.add(new Light(new Vector3f(10000, 15000, -10000), new Vector3f(1.3f, 1.3f, 1.3f))); //Sun. :)
         lights.add(new Light(new Vector3f(470, terrain.getHeightOfTerrain(470, 400) + 14, 400), new Vector3f(2f, 2f, 0.1f), new Vector3f(1, 0.01f, 0.002f))); //Lamp light.
         Camera camera = new Camera(player);
+
+        MasterRenderer renderer = new MasterRenderer(loader, camera);
+
+        //Particles.
+        ParticleMaster.init(loader, renderer.getProjectionMatrix());
+        //Flame particle. Used for mouse click.
+        ParticleTexture particleTextureFlame = new ParticleTexture(loader.loadTexture("textureParticleAtlasFlame"), 4, false);
+        ParticleSystem particleSystemFlame = new ParticleSystem(particleTextureFlame, 40, 10, 0.1f, 5, 1.5f);
+        particleSystemFlame.randomizeRotation();
+        particleSystemFlame.setDirection(new Vector3f(0, 1, 0), 0.1f);
+        particleSystemFlame.setLifeError(0.1f);
+        particleSystemFlame.setSpeedError(0.4f);
+        particleSystemFlame.setScaleError(0.8f);
+        //Fire particle.
+        ParticleTexture particleTextureFire = new ParticleTexture(loader.loadTexture("textureParticleAtlasFire"), 8, true);
+        ParticleSystem particleSystemFire = new ParticleSystem(particleTextureFire, 40, 5, 0, 3, 5f);
+        particleSystemFire.randomizeRotation();
+        particleSystemFire.setDirection(new Vector3f(0, 1, 0), 0.1f);
+        particleSystemFire.setLifeError(0.1f);
+        particleSystemFire.setSpeedError(0.4f);
+        particleSystemFire.setScaleError(0.8f);
+        //Smoke particle.
+        ParticleTexture particleTextureSmoke = new ParticleTexture(loader.loadTexture("textureParticleAtlasSmoke"), 8, true);
+        ParticleSystem particleSystemSmoke = new ParticleSystem(particleTextureSmoke, 40, 5, 0, 3, 5f);
+        particleSystemSmoke.randomizeRotation();
+        particleSystemSmoke.setDirection(new Vector3f(0, 1, 0), 0.1f);
+        particleSystemSmoke.setLifeError(0.1f);
+        particleSystemSmoke.setSpeedError(0.4f);
+        particleSystemSmoke.setScaleError(0.8f);
 
         //Mouse picker.
         MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
@@ -238,6 +239,7 @@ public class Boot {
             picker.update();
             ParticleMaster.update(camera);
 
+            renderer.renderShadowMap(entities, lights.get(0));
             GL11.glEnable(GL30.GL_CLIP_DISTANCE0); //Enable clip plane 0.
 
             //Render reflection texture.

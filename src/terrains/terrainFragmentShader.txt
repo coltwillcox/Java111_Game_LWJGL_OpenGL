@@ -5,6 +5,7 @@ in vec3 surfaceNormal;
 in vec3 toLightVector[2];
 in vec3 toCameraVector;
 in float visibility;
+in vec4 shadowCoords;
 
 out vec4 outColor;
 
@@ -13,6 +14,7 @@ uniform sampler2D rTexture;
 uniform sampler2D gTexture;
 uniform sampler2D bTexture;
 uniform sampler2D blendMap;
+uniform sampler2D shadowMap;
 uniform vec3 lightColor[2];
 uniform vec3 attenuation[2];
 uniform float shineDamper;
@@ -22,6 +24,12 @@ uniform vec3 skyColor;
 const float levels = 3.0;
 
 void main(void) {
+    float objectNearestLight = texture(shadowMap, shadowCoords.xy).r;
+    float lightFactor = 1.0;
+    if (shadowCoords.z > objectNearestLight) {
+        lightFactor = 1.0 - (shadowCoords.w * 0.4);
+    }
+
     vec3 unitNormal = normalize(surfaceNormal);
     vec3 unitVectorToCamera = normalize(toCameraVector);
     vec3 totalDiffuse = vec3(0.0);
@@ -51,7 +59,7 @@ void main(void) {
         totalDiffuse = totalDiffuse + (brightness * lightColor[i]) / attFactor;
         totalSpecular = totalSpecular + (dampedFactor * reflectivity * lightColor[i]) / attFactor;
     }
-    totalDiffuse = max(totalDiffuse, 0.2);
+    totalDiffuse = max(totalDiffuse, 0.2) * lightFactor;
 
     vec4 blendMapColor = texture(blendMap, passTextureCoords);
     float backTextureAmount = 1 - (blendMapColor.r + blendMapColor.g + blendMapColor.b);

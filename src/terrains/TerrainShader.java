@@ -34,6 +34,8 @@ public class TerrainShader extends MasterShader {
     private int locationbTexture;
     private int locationBlendMap;
     private int locationPlane;
+    private int locationToShadowMapSpace;
+    private int locationShadowMap;
 
     //Constructor.
     public TerrainShader() {
@@ -62,6 +64,8 @@ public class TerrainShader extends MasterShader {
         locationbTexture = super.getUniformLocation("bTexture");
         locationBlendMap = super.getUniformLocation("blendMap");
         locationPlane = super.getUniformLocation("plane");
+        locationToShadowMapSpace = super.getUniformLocation("toShadowMapSpace");
+        locationShadowMap = super.getUniformLocation("shadowMap");
 
         locationLightPosition = new int[MAX_LIGHTS];
         locationLightColor = new int[MAX_LIGHTS];
@@ -116,10 +120,15 @@ public class TerrainShader extends MasterShader {
         super.loadInt(locationgTexture, 2);
         super.loadInt(locationbTexture, 3);
         super.loadInt(locationBlendMap, 4);
+        super.loadInt(locationShadowMap, 5);
     }
 
     public void loadPlane(Vector4f plane) {
         super.loadVector(locationPlane, plane);
+    }
+
+    public void loadToShadowSpaceMatrix(Matrix4f matrix) {
+        super.loadMatrix(locationToShadowMapSpace, matrix);
     }
 
 }
