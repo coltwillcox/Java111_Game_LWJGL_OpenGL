@@ -73,7 +73,7 @@ public class MasterRenderer {
         shader.loadSkyColor(RED, GREEN, BLUE);
         shader.loadLights(lights);
         shader.loadViewMatrix(camera);
-        renderer.render(entities);
+        renderer.render(entities, shadowMapMasterRenderer.getToShadowMapSpaceMatrix());
         shader.stop();
         rendererNormalMap.render(entitiesNormalMap, plane, lights, camera);
         terrainShader.start();

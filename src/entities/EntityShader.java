@@ -31,6 +31,8 @@ public class EntityShader extends MasterShader {
     private int locationNumberOfRows;
     private int locationOffset;
     private int locationPlane;
+    private int locationToShadowMapSpace;
+    private int locationShadowMap;
 
     //Constructor.
     public EntityShader() {
@@ -57,6 +59,8 @@ public class EntityShader extends MasterShader {
         locationNumberOfRows = super.getUniformLocation("numberOfRows");
         locationOffset = super.getUniformLocation("offset");
         locationPlane = super.getUniformLocation("plane");
+        locationToShadowMapSpace = super.getUniformLocation("toShadowMapSpace");
+        locationShadowMap = super.getUniformLocation("shadowMap");
 
         locationLightPosition = new int[MAX_LIGHTS];
         locationLightColor = new int[MAX_LIGHTS];
@@ -66,6 +70,10 @@ public class EntityShader extends MasterShader {
             locationLightColor[i] = super.getUniformLocation("lightColor[" + i + "]");
             locationAttenuation[i] = super.getUniformLocation("attenuation[" + i + "]");
         }
+    }
+
+    public void connectTextureUnits() {
+        super.loadInt(locationShadowMap, 5);
     }
 
     public void loadTransformationMatrix(Matrix4f matrix) {
@@ -119,6 +127,10 @@ public class EntityShader extends MasterShader {
 
     public void loadPlane(Vector4f plane) {
         super.loadVector(locationPlane, plane);
+    }
+
+    public void loadToShadowSpaceMatrix(Matrix4f matrix) {
+        super.loadMatrix(locationToShadowMapSpace, matrix);
     }
 
 }

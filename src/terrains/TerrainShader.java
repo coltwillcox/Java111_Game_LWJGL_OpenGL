@@ -77,6 +77,15 @@ public class TerrainShader extends MasterShader {
         }
     }
 
+    public void connectTextureUnits() {
+        super.loadInt(locationBackgroundTexture, 0);
+        super.loadInt(locationrTexture, 1);
+        super.loadInt(locationgTexture, 2);
+        super.loadInt(locationbTexture, 3);
+        super.loadInt(locationBlendMap, 4);
+        super.loadInt(locationShadowMap, 5);
+    }
+
     public void loadTransformationMatrix(Matrix4f matrix) {
         super.loadMatrix(locationTransformationMatrix, matrix);
     }
@@ -112,15 +121,6 @@ public class TerrainShader extends MasterShader {
 
     public void loadSkyColor(float r, float g, float b) {
         super.loadVector(locationSkyColor, new Vector3f(r, g, b));
-    }
-
-    public void connectTextureUnits() {
-        super.loadInt(locationBackgroundTexture, 0);
-        super.loadInt(locationrTexture, 1);
-        super.loadInt(locationgTexture, 2);
-        super.loadInt(locationbTexture, 3);
-        super.loadInt(locationBlendMap, 4);
-        super.loadInt(locationShadowMap, 5);
     }
 
     public void loadPlane(Vector4f plane) {

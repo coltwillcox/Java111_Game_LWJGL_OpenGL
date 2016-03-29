@@ -27,10 +27,12 @@ public class EntityRenderer {
         this.shader = shader;
         shader.start();
         shader.loadProjectionMatrix(projectionMatrix);
+        shader.connectTextureUnits();
         shader.stop();
     }
 
-    public void render(Map<TexturedModel, List<Entity>> entities) {
+    public void render(Map<TexturedModel, List<Entity>> entities, Matrix4f toShadowSpace) {
+        shader.loadToShadowSpaceMatrix(toShadowSpace);
         for (TexturedModel model:entities.keySet()) {
             prepareTexturedModel(model);
             List<Entity> batch = entities.get(model);
