@@ -7,8 +7,8 @@ import renderEngine.MasterShader;
 
 public class FontShader extends MasterShader {
 
-	private static final String VERTEX_FILE = "src/fontRendering/fontVertexShader.txt";
-	private static final String FRAGMENT_FILE = "src/fontRendering/fontFragmentShader.txt";
+	private static final String VERTEX_FILE = "/fontRendering/fontVertexShader.txt";
+	private static final String FRAGMENT_FILE = "/fontRendering/fontFragmentShader.txt";
     private int locationColor;
     private int locationTranslation;
 

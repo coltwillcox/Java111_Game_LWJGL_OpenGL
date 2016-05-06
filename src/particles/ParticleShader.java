@@ -6,8 +6,8 @@ import renderEngine.MasterShader;
 
 public class ParticleShader extends MasterShader {
 
-    private static final String VERTEX_FILE = "src/particles/particleVertexShader.txt";
-    private static final String FRAGMENT_FILE = "src/particles/particleFragmentShader.txt";
+    private static final String VERTEX_FILE = "/particles/particleVertexShader.txt";
+    private static final String FRAGMENT_FILE = "/particles/particleFragmentShader.txt";
     private int locationProjectionMatrix;
     private int locationNumberOfRows;
 

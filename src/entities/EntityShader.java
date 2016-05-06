@@ -16,8 +16,8 @@ import java.util.List;
 public class EntityShader extends MasterShader {
 
     private static final int MAX_LIGHTS = 2;
-    private static final String VERTEX_FILE = "src/entities/entityVertexShader.txt";
-    private static final String FRAGMENT_FILE = "src/entities/entityFragmentShader.txt";
+    private static final String VERTEX_FILE = "/entities/entityVertexShader.txt";
+    private static final String FRAGMENT_FILE = "/entities/entityFragmentShader.txt";
     private int locationTransformationMatrix;
     private int locationProjectionMatrix;
     private int locationViewMatrix;

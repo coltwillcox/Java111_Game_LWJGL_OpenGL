@@ -17,8 +17,8 @@ import java.util.List;
 public class TerrainShader extends MasterShader {
 
     private static final int MAX_LIGHTS = 2;
-    private static final String VERTEX_FILE = "src/terrains/terrainVertexShader.txt";
-    private static final String FRAGMENT_FILE = "src/terrains/terrainFragmentShader.txt";
+    private static final String VERTEX_FILE = "/terrains/terrainVertexShader.txt";
+    private static final String FRAGMENT_FILE = "/terrains/terrainFragmentShader.txt";
     private int locationTransformationMatrix;
     private int locationProjectionMatrix;
     private int locationViewMatrix;

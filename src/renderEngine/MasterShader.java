@@ -11,6 +11,8 @@ import org.lwjgl.util.vector.Vector4f;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 
 /**
@@ -63,7 +65,8 @@ public abstract class MasterShader {
     private static int loadShader(String file, int type) {
         StringBuilder shaderSource = new StringBuilder();
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+            InputStream in = Class.class.getResourceAsStream(file);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             String line;
             while ((line = reader.readLine()) != null)
                 shaderSource.append(line).append("\n");

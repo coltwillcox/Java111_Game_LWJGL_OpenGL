@@ -17,7 +17,7 @@ public class FontType {
 	 * @param fontFile - The font file containing information about each character in the texture atlas.
 	 */
     //Constructor.
-	public FontType(int textureAtlas, File fontFile) {
+	public FontType(int textureAtlas, String fontFile) {
 		this.textureAtlas = textureAtlas;
 		this.loader = new TextMeshCreator(fontFile);
 	}

@@ -8,8 +8,8 @@ import entities.Camera;
 
 public class WaterShader extends MasterShader {
 
-	private final static String VERTEX_FILE = "src/water/waterVertexShader.txt";
-	private final static String FRAGMENT_FILE = "src/water/waterFragmentShader.txt";
+	private final static String VERTEX_FILE = "/water/waterVertexShader.txt";
+	private final static String FRAGMENT_FILE = "/water/waterFragmentShader.txt";
     private int locationProjectionMatrix;
     private int locationModelMatrix;
 	private int locationViewMatrix;

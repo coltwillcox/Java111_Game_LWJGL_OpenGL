@@ -11,6 +11,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  * Created by colt on 3/20/16.
@@ -40,7 +42,8 @@ public class Terrain {
     private RawModel generateTerrain(Loader loader, String heightMap) {
         BufferedImage image = null;
         try {
-            image = ImageIO.read(new File("res/" + heightMap + ".png"));
+            InputStream in = Class.class.getResourceAsStream("/res/" + heightMap + ".png");
+            image = ImageIO.read(in);
         } catch (IOException e) {
             e.printStackTrace();
         }

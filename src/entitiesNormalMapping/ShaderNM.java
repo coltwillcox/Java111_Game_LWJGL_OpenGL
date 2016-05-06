@@ -11,8 +11,8 @@ import renderEngine.MasterShader;
 public class ShaderNM extends MasterShader{
 	
 	private static final int MAX_LIGHTS = 2;
-    private static final String VERTEX_FILE = "src/entitiesNormalMapping/vertexShaderNM.txt";
-	private static final String FRAGMENT_FILE = "src/entitiesNormalMapping/fragmentShaderNM.txt";
+    private static final String VERTEX_FILE = "/entitiesNormalMapping/vertexShaderNM.txt";
+	private static final String FRAGMENT_FILE = "/entitiesNormalMapping/fragmentShaderNM.txt";
 	private int locationTransformationMatrix;
 	private int locationProjectionMatrix;
 	private int locationViewMatrix;

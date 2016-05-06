@@ -36,7 +36,6 @@ import water.WaterFrameBuffers;
 import water.WaterRenderer;
 import water.WaterShader;
 import water.WaterTile;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -53,7 +52,7 @@ public class Boot {
 
         //Text.
         TextMaster.init(loader);
-        FontType fontArialDF = new FontType(loader.loadTexture("fontArialDF"), new File("res/fontArialDF.fnt"));
+        FontType fontArialDF = new FontType(loader.loadTexture("fontArialDF"), "fontArialDF");
         GUIText text = new GUIText("FPS", 2, fontArialDF, new Vector2f(0, 0.1f), 1f, true);
         text.setColor(0.2f, 0.6f, 1);
 
